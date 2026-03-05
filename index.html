@@ -257,6 +257,8 @@
       margin: 2rem 0;
       opacity: 0;
       animation: fadeUp 1s ease forwards 1.5s;
+      .series-pill { text-decoration: none; cursor: pointer; }
+.series-pill:hover { border-color: var(--gold); color: var(--gold); }
     }
     .series-pill {
       border: 1px solid rgba(212,160,23,0.6);
@@ -556,10 +558,12 @@
       <p class="tagline">"La historia que enterraron.<br>La verdad que mereces saber."</p>
 
       <div class="series-row">
-        <span class="series-pill">🏛️ Civilizaciones Perdidas</span>
-        <span class="series-pill">✝️ Dios y Poder</span>
-        <span class="series-pill">🔍 Historia Prohibida</span>
-        <span class="series-pill">🌎 Latinoamérica Sin Censura</span>
+       <div class="series-row">
+  <a href="/the-velatium-archives-es.html?cat=lost-civilizations" class="series-pill">🏛️ Civilizaciones Perdidas</a>
+  <a href="/the-velatium-archives-es.html?cat=god-and-power" class="series-pill">✝️ Dios y Poder</a>
+  <a href="/the-velatium-archives-es.html?cat=forbidden-history" class="series-pill">🔍 Historia Prohibida</a>
+  <a href="/the-velatium-archives-es.html?cat=latin-america" class="series-pill">🌎 Latinoamérica Sin Censura</a>
+</div>
       </div>
 
       <div class="vision" id="vision">
