@@ -595,13 +595,14 @@
       <!-- EMAIL SIGNUP -->
       <div class="email-section" id="notify">
         <span class="email-label">— Sé el Primero en Saberlo —</span>
-        <div class="email-form" id="emailForm">
-          <input type="email" id="emailInput" placeholder="tu@email.com" autocomplete="email">
-          <button onclick="handleSubmit()">Notifícame</button>
-        </div>
-        <div class="success-msg" id="successMsg">
-          ✦ &nbsp; Estás en la lista. Los archivos abren pronto. &nbsp; ✦
-        </div>
+        <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
+        <iframe src="https://subscribe-forms.beehiiv.com/e410bc14-2d47-41ba-bc80-01cf5a3d4f22"
+          class="beehiiv-embed" 
+          data-test-id="beehiiv-embed"
+          frameborder="0"
+          scrolling="no"
+          style="width: 560px; height: 291px; margin: 0; border-radius: 0px 0px 0px 0px !important; background-color: transparent; box-shadow: 0 0 #0000; max-width: 100%;">
+          </iframe>
         <p class="email-note">Únete al Newsletter El Registro Velatium — Sin spam, nunca.</p>
       </div>
 
@@ -676,19 +677,7 @@
     setInterval(updateCountdown, 1000);
 
     // ── EMAIL FORM ──
-    function handleSubmit() {
-      const email = document.getElementById('emailInput').value;
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        document.getElementById('emailInput').style.outline = '1px solid #C0392B';
-        return;
-      }
-      document.getElementById('emailForm').style.display = 'none';
-      document.getElementById('successMsg').style.display = 'block';
-      // PARA CONECTAR A BEEHIIV O MAILCHIMP:
-      // Reemplaza esto con tu endpoint real de formulario
-      // fetch('TU_ENDPOINT_NEWSLETTER', { method: 'POST', body: JSON.stringify({email}) })
-    }
+   
 
     document.getElementById('emailInput').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') handleSubmit();
