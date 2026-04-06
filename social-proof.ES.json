@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "file": "social-proof.ES.json",
+    "version": "1.0",
+    "last_updated": "2026-04-05",
+    "deploys_to": "ES",
+    "changes": "Despliegue inicial — plantilla vacía, n8n WF-SOCIALPROOF escribe cada lunes 09:00 UTC"
+  },
+  "youtube_es": 0,
+  "youtube_en": 0,
+  "newsletter_es": 0,
+  "newsletter_en": 0,
+  "updated": ""
+}

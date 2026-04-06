@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "file": "content-feed.ES.json",
+    "version": "1.0",
+    "last_updated": "2026-04-05",
+    "deploys_to": "ES",
+    "changes": "Despliegue inicial — plantilla vacía, n8n WF-FEED escribe aquí en cada publicación"
+  },
+  "latest_episode": {
+    "title": "",
+    "slug": "",
+    "pillar": "",
+    "series": "",
+    "episode_number": null,
+    "youtube_url": "",
+    "thumbnail_url": "",
+    "duration_seconds": null,
+    "published_date": "",
+    "description_short": ""
+  },
+  "latest_newsletter": {
+    "title": "",
+    "issue_number": null,
+    "url": "",
+    "published_date": "",
+    "preview_line": ""
+  },
+  "latest_x_post": {
+    "text": "",
+    "url": "",
+    "posted_date": ""
+  },
+  "recent_episodes": []
+}
