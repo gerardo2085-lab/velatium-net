@@ -4,537 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Velatium — La historia que enterraron. La verdad que mereces saber.</title>
-  <meta name="description" content="The Velatium es una marca de historia y misterio que descubre civilizaciones ocultas, verdades suprimidas y las historias reales detrás del poder. Próximamente.">
+  <meta name="description" content="The Velatium es una marca de historia y misterio que descubre civilizaciones ocultas, verdades suprimidas y las historias reales detrás del poder.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --purple: #2D0854;
-      --purple-mid: #4A0E8F;
-      --gold: #D4A017;
-      --gold-light: #F0C040;
-      --gold-dim: #C49A20;
-      --cream: #F5EDD6;
-      --dark: #080510;
-      --dark-mid: #0E0A1A;
-      --red: #8B1A1A;
-      --red-dim: #5A1010;
-      --text: #C8B88A;
-      --text-dim: #A08850;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--dark);
-      color: var(--text);
-      font-family: 'Crimson Pro', Georgia, serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-      cursor: crosshair;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 1000;
-      opacity: 0.6;
-    }
-
-    .glow-bg {
-      position: fixed;
-      inset: 0;
-      background: 
-        radial-gradient(ellipse 60% 50% at 50% 20%, rgba(45,8,84,0.8) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 30% at 80% 80%, rgba(139,26,26,0.2) 0%, transparent 60%),
-        radial-gradient(ellipse 30% 40% at 10% 60%, rgba(212,160,23,0.05) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .stars {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .star {
-      position: absolute;
-      background: var(--gold);
-      border-radius: 50%;
-      animation: twinkle var(--dur, 3s) ease-in-out infinite;
-      animation-delay: var(--delay, 0s);
-      opacity: 0;
-    }
-    @keyframes twinkle {
-      0%, 100% { opacity: 0; }
-      50% { opacity: var(--op, 0.6); }
-    }
-
-    .deco-line {
-      width: 1px;
-      background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      opacity: 0.3;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .deco-line.left { left: 8%; }
-    .deco-line.right { right: 8%; }
-
-    .wrapper {
-      position: relative;
-      z-index: 10;
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    header {
-      width: 100%;
-      padding: 2.5rem 0 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      opacity: 0;
-      animation: fadeDown 1s ease forwards 0.3s;
-    }
-    .lang-switch a {
-      color: var(--gold-dim);
-      text-decoration: none;
-      font-family: 'Cinzel', serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      border: 1px solid var(--gold-dim);
-      padding: 0.3rem 0.8rem;
-      transition: all 0.3s;
-    }
-    .lang-switch a:hover {
-      color: var(--gold);
-      border-color: var(--gold);
-      background: rgba(212,160,23,0.05);
-    }
-    .nav-links { display: flex; gap: 2rem; }
-    .nav-links a {
-      color: var(--text-dim);
-      text-decoration: none;
-      font-family: 'Cinzel', serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      transition: color 0.3s;
-    }
-    .nav-links a:hover { color: var(--gold); }
-
-    .hero {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 4rem 0 3rem;
-    }
-
-    .logo-wrap {
-      width: 110px;
-      height: 110px;
-      margin-bottom: 2.5rem;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 0.6s;
-      position: relative;
-    }
-    .logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
-    .logo-placeholder {
-      width: 110px;
-      height: 110px;
-      border: 1px solid var(--gold-dim);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle, rgba(45,8,84,0.8), transparent);
-      position: relative;
-    }
-    .logo-placeholder::before {
-      content: '';
-      position: absolute;
-      inset: 6px;
-      border: 1px solid rgba(212,160,23,0.2);
-      border-radius: 50%;
-    }
-    .eye-svg { width: 44px; height: 44px; opacity: 0.8; }
-    .logo-glow {
-      position: absolute;
-      inset: -20px;
-      background: radial-gradient(circle, rgba(212,160,23,0.15), transparent 70%);
-      border-radius: 50%;
-      animation: pulse 3s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.5; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.1); }
-    }
-
-    .overline {
-      font-family: 'Cinzel', serif;
-      font-size: 0.82rem;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1.2rem;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 0.8s;
-    }
-
-    h1 {
-      font-family: 'Cinzel Decorative', serif;
-      font-size: clamp(2.4rem, 7vw, 4.5rem);
-      font-weight: 700;
-      color: var(--gold);
-      line-height: 1.1;
-      letter-spacing: 0.05em;
-      text-shadow: 0 0 60px rgba(212,160,23,0.3), 0 0 120px rgba(212,160,23,0.1);
-      margin-bottom: 0.5rem;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 1s;
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 1.5rem 0;
-      width: 100%;
-      max-width: 500px;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 1.2s;
-    }
-    .divider-line {
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
-    }
-    .divider-diamond {
-      width: 6px;
-      height: 6px;
-      background: var(--gold);
-      transform: rotate(45deg);
-      flex-shrink: 0;
-    }
-
-    .tagline {
-      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-      font-style: italic;
-      color: var(--cream);
-      font-weight: 300;
-      letter-spacing: 0.02em;
-      line-height: 1.6;
-      max-width: 580px;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 1.3s;
-      margin-bottom: 0.5rem;
-    }
-
-    .series-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: center;
-      margin: 2rem 0;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 1.5s;
-      .series-pill { text-decoration: none; cursor: pointer; }
-.series-pill:hover { border-color: var(--gold); color: var(--gold); }
-    }
-    .series-pill {
-      border: 1px solid rgba(212,160,23,0.6);
-      padding: 0.4rem 1.1rem;
-      font-family: 'Cinzel', serif;
-      font-size: 0.75rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--gold);
-      background: rgba(45,8,84,0.3);
-      transition: all 0.3s;
-    }
-    .series-pill:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: rgba(212,160,23,0.08);
-    }
-
-    .vision {
-      max-width: 620px;
-      text-align: center;
-      margin: 1rem 0 2.5rem;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 1.6s;
-    }
-    .vision p {
-      font-size: 1.05rem;
-      line-height: 1.85;
-      color: var(--text);
-      font-weight: 300;
-    }
-    .vision p + p { margin-top: 1rem; }
-    .vision strong {
-      color: var(--gold);
-      font-weight: 400;
-      font-style: italic;
-    }
-
-    .countdown-wrap {
-      margin: 2rem 0;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 1.7s;
-      text-align: center;
-    }
-    .countdown-label {
-      font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--gold-dim);
-      margin-bottom: 1rem;
-    }
-    .countdown {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .count-unit {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    .count-num {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      font-weight: 600;
-      color: var(--gold);
-      line-height: 1;
-      text-shadow: 0 0 30px rgba(212,160,23,0.4);
-      min-width: 3ch;
-      text-align: center;
-    }
-    .count-lbl {
-      font-family: 'Cinzel', serif;
-      font-size: 0.5rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
-    .count-sep {
-      font-family: 'Cinzel', serif;
-      font-size: 2rem;
-      color: var(--gold-dim);
-      align-self: flex-start;
-      margin-top: 0.2rem;
-      opacity: 0.5;
-    }
-
-    .email-section {
-      width: 100%;
-      max-width: 520px;
-      margin: 1.5rem 0;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 1.8s;
-    }
-    .email-label {
-      font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--gold-dim);
-      text-align: center;
-      margin-bottom: 1rem;
-      display: block;
-    }
-    .email-form {
-      display: flex;
-      gap: 0;
-      border: 1px solid var(--gold-dim);
-      background: rgba(8,5,16,0.8);
-      transition: border-color 0.3s;
-    }
-    .email-form:focus-within { border-color: var(--gold); }
-    .email-form input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      padding: 1rem 1.2rem;
-      color: var(--cream);
-      font-family: 'Crimson Pro', serif;
-      font-size: 1rem;
-      letter-spacing: 0.02em;
-    }
-    .email-form input::placeholder { color: var(--text-dim); }
-    .email-form button {
-      background: var(--gold);
-      border: none;
-      padding: 1rem 1.5rem;
-      font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--dark);
-      cursor: pointer;
-      transition: background 0.3s;
-      white-space: nowrap;
-      font-weight: 600;
-    }
-    .email-form button:hover { background: var(--gold-light); }
-    .email-note {
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-top: 0.6rem;
-      font-style: italic;
-    }
-    .success-msg {
-      display: none;
-      text-align: center;
-      font-family: 'Cinzel', serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      color: var(--gold);
-      padding: 1rem;
-      border: 1px solid rgba(212,160,23,0.3);
-      background: rgba(212,160,23,0.05);
-    }
-
-    .social-section {
-      margin: 2rem 0;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 1.9s;
-      text-align: center;
-    }
-    .social-label {
-      font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 1.2rem;
-      display: block;
-    }
-    .social-links {
-      display: flex;
-      gap: 1.2rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .social-link {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-decoration: none;
-      color: var(--text-dim);
-      font-family: 'Cinzel', serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      border: 1px solid rgba(212,160,23,0.2);
-      padding: 0.6rem 1.2rem;
-      transition: all 0.3s;
-      background: rgba(45,8,84,0.2);
-    }
-    .social-link:hover {
-      color: var(--gold);
-      border-color: var(--gold);
-      background: rgba(212,160,23,0.08);
-      transform: translateY(-2px);
-    }
-    .social-icon { font-size: 0.9rem; }
-
-    footer {
-      width: 100%;
-      padding: 2rem 0 2.5rem;
-      text-align: center;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 2s;
-      border-top: 1px solid rgba(212,160,23,0.1);
-      margin-top: 2rem;
-    }
-    .footer-brand {
-      font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.3em;
-      color: var(--gold-dim);
-      text-transform: uppercase;
-    }
-    .footer-copy {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-top: 0.4rem;
-      font-style: italic;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 600px) {
-      .nav-links { display: none; }
-      .email-form { flex-direction: column; }
-      .email-form button { width: 100%; padding: 0.9rem; }
-      .deco-line { display: none; }
-    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--purple:#2D0854;--purple-mid:#4A0E8F;--gold:#D4A017;--gold-light:#F0C040;--gold-dim:#8B6914;--cream:#F5EDD6;--dark:#080510;--dark-mid:#0E0A1A;--red:#8B1A1A;--red-dim:#5A1010;--text:#C8B88A;--text-dim:#7A6A4A}
+    html{scroll-behavior:smooth}
+    body{background:var(--dark);color:var(--text);font-family:'Crimson Pro',Georgia,serif;min-height:100vh;overflow-x:hidden;cursor:crosshair}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.6}
+    .glow-bg{position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 20%,rgba(45,8,84,0.8) 0%,transparent 70%),radial-gradient(ellipse 40% 30% at 80% 80%,rgba(139,26,26,0.2) 0%,transparent 60%),radial-gradient(ellipse 30% 40% at 10% 60%,rgba(212,160,23,0.05) 0%,transparent 60%);pointer-events:none;z-index:0}
+    .stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+    .star{position:absolute;background:var(--gold);border-radius:50%;animation:twinkle var(--dur,3s) ease-in-out infinite;animation-delay:var(--delay,0s);opacity:0}
+    @keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--op,0.6)}}
+    .deco-line{width:1px;background:linear-gradient(to bottom,transparent,var(--gold-dim),transparent);position:fixed;top:0;bottom:0;opacity:0.3;pointer-events:none;z-index:0}
+    .deco-line.left{left:8%}.deco-line.right{right:8%}
+    .wrapper{position:relative;z-index:10;max-width:860px;margin:0 auto;padding:0 2rem;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+    header{width:100%;padding:2.5rem 0 0;display:flex;justify-content:space-between;align-items:center;opacity:0;animation:fadeDown 1s ease forwards 0.3s}
+    .lang-switch a{color:var(--gold-dim);text-decoration:none;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;border:1px solid var(--gold-dim);padding:0.3rem 0.8rem;transition:all 0.3s}
+    .lang-switch a:hover{color:var(--gold);border-color:var(--gold);background:rgba(212,160,23,0.05)}
+    .nav-links{display:flex;gap:2rem}
+    .nav-links a{color:var(--text-dim);text-decoration:none;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;transition:color 0.3s}
+    .nav-links a:hover{color:var(--gold)}
+    .hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4rem 0 3rem}
+    .logo-wrap{width:110px;height:110px;margin-bottom:2.5rem;opacity:0;animation:fadeUp 1s ease forwards 0.6s;position:relative}
+    .logo-placeholder{width:110px;height:110px;border:1px solid var(--gold-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(45,8,84,0.8),transparent);position:relative}
+    .logo-placeholder::before{content:'';position:absolute;inset:6px;border:1px solid rgba(212,160,23,0.2);border-radius:50%}
+    .eye-svg{width:44px;height:44px;opacity:0.8}
+    .logo-glow{position:absolute;inset:-20px;background:radial-gradient(circle,rgba(212,160,23,0.15),transparent 70%);border-radius:50%;animation:pulse 3s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:0.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+    .overline{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:1.2rem;opacity:0;animation:fadeUp 1s ease forwards 0.8s}
+    h1{font-family:'Cinzel Decorative',serif;font-size:clamp(2.4rem,7vw,4.5rem);font-weight:700;color:var(--gold);line-height:1.1;letter-spacing:0.05em;text-shadow:0 0 60px rgba(212,160,23,0.3),0 0 120px rgba(212,160,23,0.1);margin-bottom:0.5rem;opacity:0;animation:fadeUp 1s ease forwards 1s}
+    .divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;width:100%;max-width:500px;opacity:0;animation:fadeUp 1s ease forwards 1.2s}
+    .divider-line{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent)}
+    .divider-diamond{width:6px;height:6px;background:var(--gold);transform:rotate(45deg);flex-shrink:0}
+    .tagline{font-size:clamp(1.1rem,2.5vw,1.4rem);font-style:italic;color:var(--cream);font-weight:300;letter-spacing:0.02em;line-height:1.6;max-width:580px;opacity:0;animation:fadeUp 1s ease forwards 1.3s;margin-bottom:0.5rem}
+    .series-row{display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center;margin:2rem 0;opacity:0;animation:fadeUp 1s ease forwards 1.5s}
+    .series-pill{border:1px solid rgba(212,160,23,0.25);padding:0.35rem 1rem;font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dim);background:rgba(45,8,84,0.3);transition:all 0.3s}
+    .series-pill:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,160,23,0.08)}
+    .vision{max-width:620px;text-align:center;margin:1rem 0 2.5rem;opacity:0;animation:fadeUp 1s ease forwards 1.6s}
+    .vision p{font-size:1.05rem;line-height:1.85;color:var(--text);font-weight:300}
+    .vision p+p{margin-top:1rem}
+    .vision strong{color:var(--gold);font-weight:400;font-style:italic}
+    .live-feed-section{width:100%;max-width:620px;margin:1.5rem 0;opacity:0;animation:fadeUp 1s ease forwards 1.7s}
+    .live-feed-label{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold-dim);text-align:center;display:block;margin-bottom:1rem}
+    .email-section{width:100%;max-width:520px;margin:1.5rem 0;opacity:0;animation:fadeUp 1s ease forwards 1.8s}
+    .email-label{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold-dim);text-align:center;margin-bottom:1rem;display:block}
+    .email-form{display:flex;gap:0;border:1px solid var(--gold-dim);background:rgba(8,5,16,0.8);transition:border-color 0.3s}
+    .email-form:focus-within{border-color:var(--gold)}
+    .email-form input{flex:1;background:transparent;border:none;outline:none;padding:1rem 1.2rem;color:var(--cream);font-family:'Crimson Pro',serif;font-size:1rem;letter-spacing:0.02em}
+    .email-form input::placeholder{color:var(--text-dim)}
+    .email-form button{background:var(--gold);border:none;padding:1rem 1.5rem;font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--dark);cursor:pointer;transition:background 0.3s;white-space:nowrap;font-weight:600}
+    .email-form button:hover{background:var(--gold-light)}
+    .email-note{text-align:center;font-size:0.75rem;color:var(--text-dim);margin-top:0.6rem;font-style:italic}
+    .success-msg{display:none;text-align:center;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.2em;color:var(--gold);padding:1rem;border:1px solid rgba(212,160,23,0.3);background:rgba(212,160,23,0.05)}
+    .social-section{margin:2rem 0;opacity:0;animation:fadeUp 1s ease forwards 1.9s;text-align:center}
+    .social-label{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.2rem;display:block}
+    .social-links{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap}
+    .social-link{display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:var(--text-dim);font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;border:1px solid rgba(212,160,23,0.2);padding:0.6rem 1.2rem;transition:all 0.3s;background:rgba(45,8,84,0.2)}
+    .social-link:hover{color:var(--gold);border-color:var(--gold);background:rgba(212,160,23,0.08);transform:translateY(-2px)}
+    .social-icon{font-size:0.9rem}
+    .social-proof-line{font-family:'Cinzel',serif;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);text-align:center;margin-top:1rem;min-height:1em}
+    footer{width:100%;padding:2rem 0 2.5rem;text-align:center;opacity:0;animation:fadeUp 1s ease forwards 2s;border-top:1px solid rgba(212,160,23,0.1);margin-top:2rem}
+    .footer-brand{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.3em;color:var(--gold-dim);text-transform:uppercase}
+    .footer-copy{font-size:0.75rem;color:var(--text-dim);margin-top:0.4rem;font-style:italic}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:600px){.nav-links{display:none}.email-form{flex-direction:column}.email-form button{width:100%;padding:0.9rem}.deco-line{display:none}}
   </style>
 </head>
 <body>
-
   <div class="glow-bg"></div>
   <div class="stars" id="stars"></div>
   <div class="deco-line left"></div>
   <div class="deco-line right"></div>
-
   <div class="wrapper">
-
     <header>
       <div class="lang-switch">
-        <a href="https://thevelatium.com">EN — English</a>
+        <a href="https://thevelatium.com" data-lang-switch>EN — English</a>
       </div>
       <nav class="nav-links">
         <a href="#vision">Visión</a>
-        <a href="#notify">Notifícame</a>
-        <a href="#follow">Síguenos</a>
         <a href="/the-velatium-archives-es.html">Archivos</a>
+        <a href="#notify">Boletín</a>
+        <a href="#follow">Síguenos</a>
       </nav>
     </header>
-
-    <main class="hero">
-
+    <main class="hero" data-hero>
       <div class="logo-wrap">
         <div class="logo-glow"></div>
-        <!--
-          PARA AGREGAR TU LOGO:
-          1. Sube tu archivo de logo a Namecheap junto con este archivo HTML
-          2. Reemplaza el div logo-placeholder de abajo con:
-             <img src="nombre-de-tu-logo.png" alt="The Velatium">
-        -->
         <div class="logo-placeholder">
           <svg class="eye-svg" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
             <ellipse cx="50" cy="30" rx="48" ry="28" stroke="#D4A017" stroke-width="1.5" opacity="0.6"/>
@@ -544,151 +103,69 @@
           </svg>
         </div>
       </div>
-
       <p class="overline">Est. 2026 &nbsp;·&nbsp; Historia · Misterio · Verdad</p>
-
       <h1>The Velatium</h1>
-
-      <div class="divider">
-        <div class="divider-line"></div>
-        <div class="divider-diamond"></div>
-        <div class="divider-line"></div>
-      </div>
-
-      <p class="tagline">"La historia que enterraron.<br>La verdad que mereces saber."</p>
-
+      <div class="divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
+      <p class="tagline" data-tagline>"La historia que enterraron.<br>La verdad que mereces saber."</p>
       <div class="series-row">
-       <div class="series-row">
-  <a href="/the-velatium-archives-es.html?cat=lost-civilizations" class="series-pill">🏛️ Civilizaciones Perdidas</a>
-  <a href="/the-velatium-archives-es.html?cat=god-and-power" class="series-pill">✝️ Dios y Poder</a>
-  <a href="/the-velatium-archives-es.html?cat=forbidden-history" class="series-pill">🔍 Historia Prohibida</a>
-  <a href="/the-velatium-archives-es.html?cat=latin-america" class="series-pill">🌎 Latinoamérica Sin Censura</a>
-</div>
+        <span class="series-pill">🏛️ Civilizaciones Perdidas</span>
+        <span class="series-pill">✝️ Dios y Poder</span>
+        <span class="series-pill">🔍 Historia Prohibida</span>
+        <span class="series-pill">🌎 Latinoamérica Sin Censura</span>
       </div>
-
       <div class="vision" id="vision">
         <p>Durante siglos, las historias más importantes de la humanidad han sido enterradas — por gobiernos, instituciones, vencedores y el tiempo mismo. <strong>The Velatium existe para descubrirlas.</strong></p>
         <p>Desde los primeros registros escritos del antiguo Sumeria hasta los colapsos políticos de la América Latina moderna — contamos las historias que los libros de texto omiten, las que las instituciones suprimen y las que el poder prefiere que nunca encuentres. Investigadas con rigor. Contadas con honestidad.</p>
       </div>
-
-      <!-- COUNTDOWN -->
-      <div class="countdown-wrap">
-        <p class="countdown-label">— El Primer Episodio Llega En —</p>
-        <div class="countdown" id="countdown">
-          <div class="count-unit">
-            <span class="count-num" id="days">00</span>
-            <span class="count-lbl">Días</span>
-          </div>
-          <span class="count-sep">:</span>
-          <div class="count-unit">
-            <span class="count-num" id="hours">00</span>
-            <span class="count-lbl">Horas</span>
-          </div>
-          <span class="count-sep">:</span>
-          <div class="count-unit">
-            <span class="count-num" id="minutes">00</span>
-            <span class="count-lbl">Minutos</span>
-          </div>
-          <span class="count-sep">:</span>
-          <div class="count-unit">
-            <span class="count-num" id="seconds">00</span>
-            <span class="count-lbl">Segundos</span>
-          </div>
-        </div>
+      <!-- LIVE FEED — auto-poblado por n8n WF-FEED vía content-feed.ES.json -->
+      <!-- Invisible hasta que n8n escriba el primer episodio. Sin placeholder estático. -->
+      <div class="live-feed-section">
+        <span class="live-feed-label">— Último de Los Archivos —</span>
+        <div data-live-feed></div>
       </div>
-
-      <!-- EMAIL SIGNUP -->
       <div class="email-section" id="notify">
-  <span class="email-label">— Sé el Primero en Saberlo —</span>
-  <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
-  <iframe src="https://subscribe-forms.beehiiv.com/e410bc14-2d47-41ba-bc80-01cf5a3d4f22?utm_source=es&utm_medium=website"
-    class="beehiiv-embed" 
-    data-test-id="beehiiv-embed"
-    frameborder="0"
-    scrolling="no"
-    style="width: 560px; height: 291px; margin: 0; border-radius: 0px 0px 0px 0px !important; background-color: transparent; box-shadow: 0 0 #0000; max-width: 100%;">
-  </iframe>
-  <p class="email-note">Únete al Newsletter El Registro Velatium — Sin spam, nunca.</p>
-</div>
-      <!-- SOCIAL LINKS -->
+        <span class="email-label">— Sé el Primero en Saberlo —</span>
+        <div class="email-form" id="emailForm">
+          <input type="email" id="emailInput" placeholder="tu@email.com" autocomplete="email">
+          <button onclick="handleSubmit()">Notifícame</button>
+        </div>
+        <div class="success-msg" id="successMsg">✦ &nbsp; Estás en la lista. Los archivos están abiertos. &nbsp; ✦</div>
+        <p class="email-note">Únete a La Crónica de The Velatium — Sin spam, nunca.</p>
+      </div>
       <div class="social-section" id="follow">
         <span class="social-label">— Sigue a The Velatium —</span>
         <div class="social-links">
-          <a href="https://youtube.com/@TheVelatium" target="_blank" class="social-link">
-            <span class="social-icon">▶</span> YouTube
-          </a>
-          <a href="https://tiktok.com/@thevelatium1" target="_blank" class="social-link">
-            <span class="social-icon">♪</span> TikTok
-          </a>
-          <a href="https://instagram.com/thevelatium" target="_blank" class="social-link">
-            <span class="social-icon">◈</span> Instagram
-          </a>
-          <a href="https://thevelatium.com" target="_blank" class="social-link">
-            <span class="social-icon">◉</span> In English
-          </a>
+          <a href="https://youtube.com/@TheVelatium" target="_blank" class="social-link"><span class="social-icon">▶</span> YouTube</a>
+          <a href="https://tiktok.com/@thevelatium1" target="_blank" class="social-link"><span class="social-icon">♪</span> TikTok</a>
+          <a href="https://instagram.com/TheVelatium" target="_blank" class="social-link"><span class="social-icon">◈</span> Instagram</a>
+          <a href="https://thevelatium.com" target="_blank" class="social-link"><span class="social-icon">◉</span> In English</a>
         </div>
+        <!-- Prueba social — actualizado automáticamente por n8n WF-SOCIALPROOF cada lunes -->
+        <p class="social-proof-line" data-social-proof></p>
       </div>
-
     </main>
-
     <footer>
       <p class="footer-brand">The Velatium &nbsp;·&nbsp; thevelatium.net</p>
       <p class="footer-copy">© 2026 The Velatium. Todos los derechos reservados.</p>
     </footer>
-
   </div>
-
   <script>
-    // ── STARS ──
     const starsEl = document.getElementById('stars');
     for (let i = 0; i < 80; i++) {
-      const star = document.createElement('div');
-      star.className = 'star';
+      const star = document.createElement('div'); star.className = 'star';
       const size = Math.random() * 2 + 0.5;
-      star.style.cssText = `
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-        width: ${size}px;
-        height: ${size}px;
-        --dur: ${Math.random() * 4 + 2}s;
-        --delay: ${Math.random() * 5}s;
-        --op: ${Math.random() * 0.5 + 0.2};
-      `;
+      star.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;--dur:${Math.random()*4+2}s;--delay:${Math.random()*5}s;--op:${Math.random()*0.5+0.2};`;
       starsEl.appendChild(star);
     }
-
-    // ── COUNTDOWN ──
-    // Cambia la fecha de lanzamiento aquí: año, mes-1, día
-    const launchDate = new Date(2026, 2, 15, 0, 0, 0); // 15 de marzo 2026
-
-    function updateCountdown() {
-      const now = new Date();
-      const diff = launchDate - now;
-      if (diff <= 0) {
-        document.getElementById('countdown').innerHTML = '<p style="font-family:Cinzel,serif;color:var(--gold);letter-spacing:0.2em;font-size:0.8rem;">LOS ARCHIVOS ESTÁN ABIERTOS</p>';
-        return;
-      }
-      const d = Math.floor(diff / 86400000);
-      const h = Math.floor((diff % 86400000) / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
-      document.getElementById('days').textContent = String(d).padStart(2, '0');
-      document.getElementById('hours').textContent = String(h).padStart(2, '0');
-      document.getElementById('minutes').textContent = String(m).padStart(2, '0');
-      document.getElementById('seconds').textContent = String(s).padStart(2, '0');
+    function handleSubmit() {
+      const email = document.getElementById('emailInput').value;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('emailInput').style.outline = '1px solid #C0392B'; return; }
+      document.getElementById('emailForm').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
     }
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-
-    // ── EMAIL FORM ──
-   
-
-    document.getElementById('emailInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') handleSubmit();
-    });
+    document.getElementById('emailInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') handleSubmit(); });
   </script>
-
-<script src="/velatium-core.js" defer></script>
-<script src="/velatium-push.js" defer></script>
+  <script src="/velatium-core.js" defer></script>
+  <script src="/velatium-push.js" defer></script>
 </body>
 </html>

@@ -115,7 +115,7 @@
     @media (max-width: 600px) { .nav-links { display: none; } .deco-line { display: none; } .article-body p:first-of-type::first-letter { font-size: 2.5rem; } }
   </style>
 </head>
-<body>
+<body data-slug="✏️-numero-slug-here" data-pillar="✏️-pillar-slug-here" data-series="">
 
   <div class="glow-bg"></div>
   <div class="stars" id="stars"></div>
@@ -125,7 +125,7 @@
   <div class="wrapper">
 
     <header>
-      <a href="/index.html" class="brand-link">← The Velatium</a>
+      <a href="/indexES.html" class="brand-link">← The Velatium</a>
       <nav class="nav-links">
         <a href="/newsletter-es.html">Todos los Números</a>
         <a href="https://youtube.com/@TheVelatium" target="_blank">YouTube</a>
@@ -171,7 +171,7 @@
       CUERPO DEL ARTÍCULO — ✏️ EDITA EL CONTENIDO DENTRO DE CADA SECCIÓN
       NO cambies la estructura HTML — solo cambia el texto
     ============================================================ -->
-    <div class="article-body">
+    <div class="article-body" data-article data-pull-quote="">
 
       <!-- ══════════════════════════════════
         SECCIÓN 1: LA HISTORIA
@@ -271,6 +271,9 @@
 
     </div><!-- fin article-body -->
 
+    <!-- EPISODIOS RELACIONADOS — auto-poblado por velatium-core.js desde content-feed.ES.json recent_episodes[] -->
+    <div data-related-episodes></div>
+
     <footer>
       <p class="footer-brand">La Crónica de The Velatium &nbsp;·&nbsp; thevelatium.net</p>
       <p class="footer-copy">© 2026 The Velatium. La historia que enterraron. La verdad que mereces saber.</p>
@@ -288,6 +291,10 @@
       starsEl.appendChild(star);
     }
   </script>
+
+
+  <script src="/velatium-core.js" defer></script>
+  <script src="/velatium-push.js" defer></script>
 
 </body>
 </html>
