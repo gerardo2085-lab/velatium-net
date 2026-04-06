@@ -1,34 +1,61 @@
 {
-  "_meta": {
-    "file": "content-feed.ES.json",
-    "version": "1.0",
-    "last_updated": "2026-04-05",
-    "deploys_to": "ES",
-    "changes": "Despliegue inicial — plantilla vacía, n8n WF-FEED escribe aquí en cada publicación"
-  },
-  "latest_episode": {
-    "title": "",
-    "slug": "",
-    "pillar": "",
-    "series": "",
-    "episode_number": null,
-    "youtube_url": "",
-    "thumbnail_url": "",
-    "duration_seconds": null,
-    "published_date": "",
-    "description_short": ""
-  },
-  "latest_newsletter": {
-    "title": "",
-    "issue_number": null,
-    "url": "",
-    "published_date": "",
-    "preview_line": ""
-  },
-  "latest_x_post": {
-    "text": "",
-    "url": "",
-    "posted_date": ""
-  },
-  "recent_episodes": []
+  "last_updated": "2026-04-06",
+  "recent_episodes": [
+    {
+      "id": "ep003",
+      "title": "EP003: Cuba 1959 — El Año Que Cambió Todo",
+      "description": "Batista huyó a las 2 AM en Año Nuevo. Para fin de año, Castro había suspendido la constitución, nacionalizado industrias enteras y creado un estado de vigilancia.",
+      "url": "/episodio-003-es.html",
+      "youtube": "https://youtu.be/UOeQTXurRPY",
+      "series": "Latinoamérica Sin Censura",
+      "date": "2026-04-05",
+      "language": "es"
+    },
+    {
+      "id": "ep002",
+      "title": "EP002: El Asalto al Moncada — Cómo un Desastre Construyó una Revolución",
+      "description": "160 hombres con escopetas de caza atacaron la segunda base militar más grande de Cuba. Fueron masacrados en minutos. Ese desastre se convirtió en el mito fundacional.",
+      "url": "/episodio-002-es.html",
+      "youtube": "https://youtu.be/tflwuEJL7mQ",
+      "series": "Latinoamérica Sin Censura",
+      "date": "2026-03-01",
+      "language": "es"
+    },
+    {
+      "id": "ep001",
+      "title": "EP001: Cuba Antes de Castro — El País Que Nadie Te Mostró",
+      "description": "En 1958, Cuba tenía el tercer ingreso per cápita más alto de América Latina. La Habana eclipsaba a Las Vegas. Luego una revolución lo borró todo.",
+      "url": "/episodio-001-es.html",
+      "youtube": "https://youtu.be/vCxt8fTS_M8",
+      "series": "Latinoamérica Sin Censura",
+      "date": "2026-02-01",
+      "language": "es"
+    }
+  ],
+  "recent_issues": [
+    {
+      "id": "num003",
+      "title": "Número #003: El Año en Que Cuba Se Convirtió en Algo Que Nadie Había Votado",
+      "description": "La Nochevieja de 1958, Batista huyó con millones en efectivo. Para diciembre de 1959, Castro había nacionalizado industrias enteras.",
+      "url": "/numero-003-es.html",
+      "date": "2026-04-05",
+      "language": "es"
+    },
+    {
+      "id": "num002",
+      "title": "Número #002: El Ataque Que Fracasó — Y Construyó una Revolución de Todos Modos",
+      "description": "160 hombres con escopetas de caza atacaron la segunda base militar más importante de Cuba. Fueron masacrados en minutos.",
+      "url": "/numero-002-es.html",
+      "date": "2026-03-01",
+      "language": "es"
+    },
+    {
+      "id": "num001",
+      "title": "Número #001: La Cuba Que Desapareció Antes de Que Castro Diera un Solo Paso",
+      "description": "En 1958, Cuba tenía el tercer ingreso per cápita más alto de América Latina. La Habana rivalizaba con París. Luego todo se borró.",
+      "url": "/numero-001-es.html",
+      "date": "2026-02-01",
+      "language": "es"
+    }
+  ]
 }
