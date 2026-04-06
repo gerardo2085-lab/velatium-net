@@ -221,7 +221,7 @@ function initReturningVisitor() {
       'text-decoration:none;text-transform:uppercase;transition:all 0.3s'
     ].join(';');
     cta.textContent = VT.lang === 'es'
-      ? 'Llevas el regreso. Lee el libro.'
+      ? 'Has leído la evidencia. Lee el libro.'
       : "You've read the evidence. Get the book.";
     cta.addEventListener('mouseenter', () => { cta.style.background = VT.gold; cta.style.color = '#080510'; });
     cta.addEventListener('mouseleave', () => { cta.style.background = 'transparent'; cta.style.color = VT.gold; });
