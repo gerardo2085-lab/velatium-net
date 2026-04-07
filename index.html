@@ -129,7 +129,7 @@
           <input type="email" id="emailInput" placeholder="tu@email.com" autocomplete="email">
           <button onclick="handleSubmit()">Notifícame</button>
         </div>
-        <div class="success-msg" id="successMsg">✦ &nbsp; Estás en la lista. Los archivos están abiertos. &nbsp; ✦</div>
+        <div class="success-msg" id="successMsg">Ya eres parte de esto.</div>
         <p class="email-note">Únete a La Crónica de The Velatium — Sin spam, nunca.</p>
       </div>
       <div class="social-section" id="follow">
@@ -157,9 +157,18 @@
       star.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;--dur:${Math.random()*4+2}s;--delay:${Math.random()*5}s;--op:${Math.random()*0.5+0.2};`;
       starsEl.appendChild(star);
     }
-    function handleSubmit() {
+    async function handleSubmit() {
       const email = document.getElementById('emailInput').value;
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('emailInput').style.outline = '1px solid #C0392B'; return; }
+      const btn = document.querySelector('#emailForm button');
+      btn.textContent = '...'; btn.disabled = true;
+      try {
+        await fetch('http://100.119.2.16:5678/webhook/subscribe-es', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+      } catch(e) {}
       document.getElementById('emailForm').style.display = 'none';
       document.getElementById('successMsg').style.display = 'block';
     }
@@ -169,3 +178,4 @@
   <script src="/velatium-push.js" defer></script>
 </body>
 </html>
+
