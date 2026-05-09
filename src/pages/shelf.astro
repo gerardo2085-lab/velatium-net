@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Literacy — My Library" protected={true}>
+  <div id="topbar" class="topbar">
+    <div class="logo">
+      <div class="logo-mark" style="width:32px;height:32px;">
+        <svg class="logo-arcs" viewBox="0 0 48 48" fill="none">
+          <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-n" style="font-size:20px;">N</span>
+      </div>
+    </div>
+    <div class="topbar-right" id="username-display"></div>
+  </div>
+
+  <div style="padding-bottom:40px;">
+    <div style="margin-bottom:28px;">
+      <p class="section-label">RECENTLY ADDED</p>
+      <div class="horizontal-scroll" id="recent-books"></div>
+    </div>
+    <div>
+      <p class="section-label">MY LIBRARY</p>
+      <div class="grid-3" id="all-books"></div>
+    </div>
+  </div>
+
+  <div id="empty-state" style="display:none;text-align:center;padding:60px 20px;color:var(--text-muted);font-size:14px;">
+    No books available yet.
+  </div>
+
+  <script>
+    const token = sessionStorage.getItem('literacy_token');
+    const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+    if (user) document.getElementById('username-display').textContent = user.username;
+
+    function bookCardHTML(book, small = false) {
+      const cover = book.cover_path
+        ? `/images/covers/${book.slug}.jpeg`
+        : `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='300' viewBox='0 0 200 300'><rect width='200' height='300' fill='%231a1a1a'/><text x='100' y='155' text-anchor='middle' fill='%23444' font-size='14' font-family='sans-serif'>${encodeURIComponent(book.title.slice(0,12))}</text></svg>`;
+      return `
+        <div class="book-card" onclick="location.href='/player?slug=${book.slug}'">
+          <img src="${cover}" alt="${book.title}" loading="lazy" />
+          <div class="book-card-body">
+            <div class="book-card-title">${book.title}</div>
+            <div class="book-card-author">${book.author}</div>
+            <div class="book-card-meta">${book.chapter_count} ch${book.chapter_count !== 1 ? 's' : ''}</div>
+          </div>
+        </div>`;
+    }
+
+    async function load() {
+      try {
+        const res = await fetch(`${window.API}/books`, {
+          headers: { 'X-Session-Token': token }
+        });
+        if (!res.ok) { location.href = '/'; return; }
+        const books = await res.json();
+        if (!books.length) {
+          document.getElementById('empty-state').style.display = 'block';
+          return;
+        }
+        const recent = books.slice(0, 3);
+        document.getElementById('recent-books').innerHTML = recent.map(b => bookCardHTML(b, true)).join('');
+        document.getElementById('all-books').innerHTML = books.map(b => bookCardHTML(b)).join('');
+      } catch {
+        location.href = '/';
+      }
+    }
+    load();
+  </script>
+</Base>

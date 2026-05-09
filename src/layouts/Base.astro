@@ -1,0 +1,46 @@
+---
+const { title = 'Literacy', protected: isProtected = false, adminOnly = false } = Astro.props;
+const API = 'https://api.thevelatium.net';
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles/tokens.css" />
+  <link rel="stylesheet" href="/src/styles/noir.css" />
+  <title>{title}</title>
+</head>
+<body>
+  <slot />
+  <script define:vars={{ isProtected, adminOnly, API }}>
+    const token = sessionStorage.getItem('literacy_token');
+    const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+
+    if (isProtected && !token) {
+      location.href = '/';
+    }
+    if (adminOnly && (!user || user.role !== 'admin')) {
+      location.href = '/shelf';
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().catch(() => {});
+    }
+
+    window.API = API;
+    window.authToken = token;
+    window.currentUser = user;
+  </script>
+</body>
+</html>

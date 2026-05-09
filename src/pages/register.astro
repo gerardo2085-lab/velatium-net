@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Literacy — Request Access">
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+    <div class="logo" style="margin-bottom:32px;">
+      <div class="logo-mark">
+        <svg class="logo-arcs" viewBox="0 0 48 48" fill="none">
+          <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-n">N</span>
+      </div>
+      <span class="logo-wordmark">LITERACY</span>
+    </div>
+
+    <div class="card" style="width:100%;max-width:360px;">
+      <form id="register-form" style="display:flex;flex-direction:column;gap:12px;">
+        <div id="error-msg" style="display:none;color:#ff4444;font-size:13px;text-align:center;padding:8px 0;"></div>
+        <div id="success-msg" style="display:none;color:var(--text-secondary);font-size:14px;text-align:center;padding:16px 0;line-height:1.6;"></div>
+        <div id="form-fields" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" id="username" placeholder="Name" autocomplete="name" required />
+          <input type="email" id="email" placeholder="Email" autocomplete="email" required />
+          <input type="password" id="password" placeholder="Password" autocomplete="new-password" required />
+          <button type="submit" id="submit-btn">Request Access</button>
+        </div>
+      </form>
+      <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-secondary);">
+        Already have access? <a href="/">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      const err = document.getElementById('error-msg');
+      const success = document.getElementById('success-msg');
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+      err.style.display = 'none';
+      try {
+        const res = await fetch(`${window.API}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+        document.getElementById('form-fields').style.display = 'none';
+        success.textContent = 'Request sent. You\'ll be notified when approved.';
+        success.style.display = 'block';
+      } catch (ex) {
+        err.textContent = ex.message;
+        err.style.display = 'block';
+        btn.textContent = 'Request Access';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</Base>
