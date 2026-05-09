@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#000000"><link rel="manifest" href="/manifest.json"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/src/styles/tokens.css"><link rel="stylesheet" href="/src/styles/noir.css"><title>Literacy — My Library</title></head> <body>  <div id="topbar" class="topbar"> <div class="logo"> <div class="logo-mark" style="width:32px;height:32px;"> <svg class="logo-arcs" viewBox="0 0 48 48" fill="none"> <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> </svg> <span class="logo-n" style="font-size:20px;">N</span> </div> </div> <div class="topbar-right" id="username-display"></div> </div> <div style="padding-bottom:40px;"> <div style="margin-bottom:28px;"> <p class="section-label">RECENTLY ADDED</p> <div class="horizontal-scroll" id="recent-books"></div> </div> <div> <p class="section-label">MY LIBRARY</p> <div class="grid-3" id="all-books"></div> </div> </div> <div id="empty-state" style="display:none;text-align:center;padding:60px 20px;color:var(--text-muted);font-size:14px;">
+No books available yet.
+</div> <script type="module">const i=sessionStorage.getItem("literacy_token"),a=JSON.parse(sessionStorage.getItem("literacy_user")||"null");a&&(document.getElementById("username-display").textContent=a.username);function o(e,t=!1){const s=e.cover_path?`/images/covers/${e.slug}.jpeg`:`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='300' viewBox='0 0 200 300'><rect width='200' height='300' fill='%231a1a1a'/><text x='100' y='155' text-anchor='middle' fill='%23444' font-size='14' font-family='sans-serif'>${encodeURIComponent(e.title.slice(0,12))}</text></svg>`;return`
+        <div class="book-card" onclick="location.href='/player?slug=${e.slug}'">
+          <img src="${s}" alt="${e.title}" loading="lazy" />
+          <div class="book-card-body">
+            <div class="book-card-title">${e.title}</div>
+            <div class="book-card-author">${e.author}</div>
+            <div class="book-card-meta">${e.chapter_count} ch${e.chapter_count!==1?"s":""}</div>
+          </div>
+        </div>`}async function c(){try{const e=await fetch(`${window.API}/books`,{headers:{"X-Session-Token":i}});if(!e.ok){location.href="/";return}const t=await e.json();if(!t.length){document.getElementById("empty-state").style.display="block";return}const s=t.slice(0,3);document.getElementById("recent-books").innerHTML=s.map(n=>o(n,!0)).join(""),document.getElementById("all-books").innerHTML=t.map(n=>o(n)).join("")}catch{location.href="/"}}c();</script>  <script>(function(){const isProtected = true;
+const adminOnly = false;
+const API = "https://api.thevelatium.net";
+
+    const token = sessionStorage.getItem('literacy_token');
+    const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+
+    if (isProtected && !token) {
+      location.href = '/';
+    }
+    if (adminOnly && (!user || user.role !== 'admin')) {
+      location.href = '/shelf';
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().catch(() => {});
+    }
+
+    window.API = API;
+    window.authToken = token;
+    window.currentUser = user;
+  })();</script> </body> </html>
