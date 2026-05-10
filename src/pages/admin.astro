@@ -122,9 +122,14 @@ import Base from '../layouts/Base.astro';
             <div style="font-size:11px;color:var(--text-secondary);">${b.author}</div>
             <div style="font-size:10px;color:var(--text-muted);">${b.chapter_count} chapters · ${new Date(b.date_added).toLocaleDateString()}</div>
           </div>
-          <div class="row-actions" style="flex-shrink:0;">
+          <div class="row-actions" style="flex-shrink:0;flex-wrap:wrap;gap:4px;">
             <span class="badge ${b.status}">${b.status}</span>
-            <button class="btn-sm" onclick="fetchCover('${b.slug}', this)" title="Auto-fetch cover from Open Library / Google Books">Cover</button>
+            <button class="btn-sm" onclick="fetchCover('${b.slug}', this)" title="Auto-fetch cover from Open Library / Google Books">↓ Cover</button>
+            <label class="btn-sm" style="cursor:pointer;" title="Upload cover image from your device">
+              ↑ Cover
+              <input type="file" accept="image/*" style="display:none;" onchange="uploadCover('${b.slug}', this)">
+            </label>
+            ${b.chapter_count <= 1 ? `<button class="btn-sm" onclick="reExtract('${b.slug}', this)" title="Re-extract chapters from embedded metadata">Chapters</button>` : ''}
             <button class="btn-sm" onclick="toggleBook('${b.slug}')">${b.status === 'ready' ? 'Hide' : 'Show'}</button>
           </div>
         </div>`).join('');
@@ -146,6 +151,48 @@ import Base from '../layouts/Base.astro';
     window.toggleBook = async (slug) => {
       await apiCall(`/admin/books/${slug}/toggle`, 'POST');
       loadBooks();
+    };
+    window.uploadCover = async (slug, input) => {
+      const file = input.files[0];
+      if (!file) return;
+      const label = input.parentElement;
+      const orig  = label.childNodes[0].textContent;
+      label.childNodes[0].textContent = '…';
+      const form = new FormData();
+      form.append('file', file);
+      try {
+        const res = await fetch(`${API}/admin/books/${slug}/upload-cover`, {
+          method: 'POST',
+          headers: { 'X-Session-Token': token },
+          body: form,
+        });
+        if (res.ok) {
+          label.childNodes[0].textContent = '✓';
+          setTimeout(() => loadBooks(), 800);
+        } else {
+          const d = await res.json();
+          label.childNodes[0].textContent = orig;
+          alert(d.error || 'Upload failed');
+        }
+      } catch {
+        label.childNodes[0].textContent = orig;
+      }
+    };
+    window.reExtract = async (slug, btn) => {
+      btn.disabled = true; btn.textContent = '…';
+      try {
+        const res = await apiCall(`/admin/books/${slug}/re-extract-chapters`, 'POST');
+        const d   = await res.json();
+        if (res.ok && d.chapters > 1) {
+          btn.textContent = `✓ ${d.chapters} ch`;
+          setTimeout(() => loadBooks(), 1200);
+        } else {
+          btn.disabled = false; btn.textContent = 'Chapters';
+          alert(d.error || `Only ${d.chapters} chapter found — no embedded chapters in file.`);
+        }
+      } catch {
+        btn.disabled = false; btn.textContent = 'Chapters';
+      }
     };
     window.fetchCover = async (slug, btn) => {
       const orig = btn.textContent;

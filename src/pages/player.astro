@@ -234,6 +234,7 @@ import Base from '../layouts/Base.astro';
     document.addEventListener('visibilitychange', () => { if (document.hidden && !audio.paused) saveProgress(audio.currentTime); });
 
     function onPageLoad() {
+      if (!location.pathname.includes('/player')) return;
       API   = window.API;
       token = sessionStorage.getItem('literacy_token');
       slug  = new URLSearchParams(location.search).get('slug');
@@ -280,7 +281,6 @@ import Base from '../layouts/Base.astro';
         if (prog.position) audio.currentTime = prog.position;
       } catch { location.href = '/shelf'; }
     }
-    // First load — astro:page-load won't fire for the initial render
-    onPageLoad();
+    // astro:page-load fires on first load too — no explicit call needed
   </script>
 </Base>
