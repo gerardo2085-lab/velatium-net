@@ -5,17 +5,7 @@ import Base from '../layouts/Base.astro';
   <div class="player-container">
     <div class="topbar" style="width:100%;padding:16px 20px;">
       <div class="logo">
-        <div class="logo-mark" style="width:32px;height:32px;">
-          <svg class="logo-arcs" viewBox="0 0 48 48" fill="none">
-            <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-            <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-            <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-            <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-            <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-            <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-          </svg>
-          <span class="logo-n" style="font-size:20px;">N</span>
-        </div>
+        <img src="/icons/icon-192.png" style="width:32px;height:32px;border-radius:8px;" alt="Literacy" />
       </div>
     </div>
 
@@ -67,19 +57,56 @@ import Base from '../layouts/Base.astro';
         <span id="speed-label">1×</span>
       </button>
     </div>
-
-    <div id="chapters-panel" style="display:none;width:100%;max-width:360px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);max-height:300px;overflow-y:auto;" class="card"></div>
   </div>
+
+  <!-- Full-screen chapters overlay -->
+  <div id="chapters-overlay" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.82);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);flex-direction:column;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:52px 24px 16px;flex-shrink:0;">
+      <div style="min-width:0;flex:1;margin-right:12px;">
+        <div style="font-size:10px;letter-spacing:0.14em;color:rgba(255,255,255,0.4);margin-bottom:6px;">CHAPTERS</div>
+        <div id="overlay-book-title" style="font-size:17px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <button id="btn-download-all"
+          style="font-size:12px;font-weight:600;padding:8px 14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:20px;color:#fff;cursor:pointer;white-space:nowrap;letter-spacing:0.02em;">
+          ↓ Save offline
+        </button>
+        <button id="btn-close-overlay"
+          style="width:34px;height:34px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.12);border-radius:50%;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          ✕
+        </button>
+      </div>
+    </div>
+    <div id="chapters-scroll" style="flex:1;overflow-y:auto;padding:0 24px 48px;"></div>
+  </div>
+
+  <style>
+    #chapters-overlay { animation: none; }
+    #chapters-overlay.open { display: flex !important; animation: overlayIn 220ms ease; }
+    @keyframes overlayIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .ch-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer; transition: opacity 150ms;
+    }
+    .ch-row:active { opacity: 0.6; }
+    .ch-num { width: 28px; text-align: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .ch-title { flex: 1; min-width: 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ch-dl { font-size: 11px; min-width: 32px; text-align: right; flex-shrink: 0; }
+  </style>
 
   <script>
     let API, token, slug;
 
     let book = null, chapters = [], currentChapter = 1, playbackRate = 1;
-    // Use the persistent global audio element from Base.astro
     const audio = document.getElementById('global-audio') || new Audio();
     window.__audio = audio;
     const speeds = [0.75, 1, 1.25, 1.5, 2];
     let speedIdx = 1;
+    let dlActive = false;
 
     const $ = id => document.getElementById(id);
 
@@ -93,6 +120,7 @@ import Base from '../layouts/Base.astro';
       return `${API}/books/${slug}/chapters/${n}/audio?token=${encodeURIComponent(token)}`;
     }
 
+    // ── OPFS helpers ──────────────────────────────────────────────────────────
     async function getAudioSrc(n) {
       try {
         const root = await navigator.storage.getDirectory();
@@ -104,11 +132,20 @@ import Base from '../layouts/Base.astro';
       }
     }
 
+    async function isCached(n) {
+      try {
+        const root = await navigator.storage.getDirectory();
+        const dir  = await root.getDirectoryHandle(`book-${slug}`);
+        await dir.getFileHandle(`ch-${n}.mp3`);
+        return true;
+      } catch { return false; }
+    }
+
     async function downloadChapter(n) {
       try {
         const root = await navigator.storage.getDirectory();
         const dir  = await root.getDirectoryHandle(`book-${slug}`, { create: true });
-        try { await dir.getFileHandle(`ch-${n}.mp3`); return; } catch {}  // already cached
+        try { await dir.getFileHandle(`ch-${n}.mp3`); return; } catch {}
         const res = await fetch(audioUrl(n));
         const fh  = await dir.getFileHandle(`ch-${n}.mp3`, { create: true });
         const w   = await fh.createWritable();
@@ -116,6 +153,102 @@ import Base from '../layouts/Base.astro';
       } catch {}
     }
 
+    async function downloadChapterTracked(n, onProgress) {
+      try {
+        const root = await navigator.storage.getDirectory();
+        const dir  = await root.getDirectoryHandle(`book-${slug}`, { create: true });
+        try { await dir.getFileHandle(`ch-${n}.mp3`); onProgress(1); return; } catch {}
+        const res    = await fetch(audioUrl(n));
+        const total  = parseInt(res.headers.get('content-length') || '0');
+        const reader = res.body.getReader();
+        const chunks = [];
+        let received = 0;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          received += value.length;
+          if (total > 0) onProgress(received / total);
+        }
+        const blob = new Blob(chunks);
+        const fh = await dir.getFileHandle(`ch-${n}.mp3`, { create: true });
+        const w  = await fh.createWritable();
+        await w.write(blob);
+        await w.close();
+        onProgress(1);
+      } catch(e) { console.error('dl failed ch', n, e); }
+    }
+
+    // ── Chapter overlay ───────────────────────────────────────────────────────
+    function setChDlIcon(n, text) {
+      const el = $(`ch-dl-${n}`);
+      if (el) { el.textContent = text; el.style.color = text === '✓' ? '#6dbb6d' : 'rgba(255,255,255,0.4)'; }
+    }
+
+    async function openChaptersOverlay() {
+      const overlay = $('chapters-overlay');
+      if (!overlay) return;
+      $('overlay-book-title').textContent = book ? book.title : '';
+      overlay.style.display = 'flex';
+      overlay.classList.add('open');
+
+      $('chapters-scroll').innerHTML = chapters.map(ch => {
+        const active = ch.number === currentChapter;
+        return `<div class="ch-row" onclick="window.loadCh(${ch.number})">
+          <div class="ch-num" style="color:${active ? 'var(--accent)' : 'rgba(255,255,255,0.28)'};">${ch.number}</div>
+          <div class="ch-title" style="font-weight:${active ? '600' : '400'};color:${active ? '#fff' : 'rgba(255,255,255,0.72)'};">${ch.title || 'Chapter ' + ch.number}</div>
+          <div class="ch-dl" id="ch-dl-${ch.number}">·</div>
+        </div>`;
+      }).join('');
+
+      // Scroll active chapter into view
+      const activeRow = $(`ch-dl-${currentChapter}`)?.closest?.('.ch-row') ||
+        [...document.querySelectorAll('.ch-row')][currentChapter - 1];
+      if (activeRow) setTimeout(() => activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' }), 80);
+
+      // Check cache state for all chapters (non-blocking)
+      for (const ch of chapters) {
+        isCached(ch.number).then(cached => setChDlIcon(ch.number, cached ? '✓' : ''));
+      }
+
+      // Update download-all button
+      updateDownloadBtn();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeChaptersOverlay() {
+      const overlay = $('chapters-overlay');
+      if (overlay) { overlay.style.display = 'none'; overlay.classList.remove('open'); }
+      document.body.style.overflow = '';
+    }
+
+    async function updateDownloadBtn() {
+      const btn = $('btn-download-all');
+      if (!btn || dlActive) return;
+      let cachedCount = 0;
+      for (const ch of chapters) { if (await isCached(ch.number)) cachedCount++; }
+      if (cachedCount === chapters.length) btn.textContent = '✓ Saved offline';
+      else if (cachedCount > 0) btn.textContent = `↓ Save offline (${cachedCount}/${chapters.length})`;
+      else btn.textContent = '↓ Save offline';
+    }
+
+    async function downloadAll() {
+      if (dlActive) return;
+      dlActive = true;
+      const btn = $('btn-download-all');
+      for (let i = 0; i < chapters.length; i++) {
+        const n = chapters[i].number;
+        await downloadChapterTracked(n, (pct) => {
+          setChDlIcon(n, pct >= 1 ? '✓' : `${Math.round(pct * 100)}%`);
+          if (btn) btn.textContent = `${i + 1}/${chapters.length} · ${Math.round(pct * 100)}%`;
+        });
+        setChDlIcon(n, '✓');
+      }
+      dlActive = false;
+      if (btn) btn.textContent = '✓ Saved offline';
+    }
+
+    // ── Audio / playback ──────────────────────────────────────────────────────
     function ttsPlay(text, lang = 'en') {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
@@ -124,6 +257,7 @@ import Base from '../layouts/Base.astro';
     }
 
     async function loadChapter(n) {
+      closeChaptersOverlay();
       currentChapter = n;
       const ch = chapters.find(c => c.number === n);
       if (!ch) return;
@@ -162,7 +296,6 @@ import Base from '../layouts/Base.astro';
       const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
       $('seek-fill').style.width = pct + '%';
       $('seek-thumb').style.left = pct + '%';
-      // buffered range indicator
       if (audio.buffered.length && audio.duration) {
         const buffEnd = audio.buffered.end(audio.buffered.length - 1);
         $('buffer-fill').style.width = ((buffEnd / audio.duration) * 100) + '%';
@@ -187,20 +320,18 @@ import Base from '../layouts/Base.astro';
       const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
       audio.currentTime = pct * audio.duration;
     }
+
     function wireControls() {
       const seekBar = $('seek-bar');
       if (!seekBar) return;
-      // Clone nodes to drop stale listeners from previous view-transition render
       const newSeekBar = seekBar.cloneNode(true);
       seekBar.parentNode.replaceChild(newSeekBar, seekBar);
-
       newSeekBar.addEventListener('click', (e) => seekToX(e.clientX));
       newSeekBar.addEventListener('touchstart', (e) => { e.preventDefault(); seekToX(e.touches[0].clientX); }, { passive: false });
       newSeekBar.addEventListener('touchmove',  (e) => { e.preventDefault(); seekToX(e.touches[0].clientX); }, { passive: false });
 
       $('btn-play').addEventListener('click', () => {
-        if (audio.paused) audio.play().catch(() => {});
-        else audio.pause();
+        if (audio.paused) audio.play().catch(() => {}); else audio.pause();
       });
       $('btn-back').addEventListener('click', () => { audio.currentTime = Math.max(0, audio.currentTime - 15); });
       $('btn-fwd').addEventListener('click',  () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); });
@@ -214,21 +345,22 @@ import Base from '../layouts/Base.astro';
         $('speed-label').textContent = playbackRate + '×';
       });
 
-      $('btn-chapters').addEventListener('click', () => {
-        const panel = $('chapters-panel');
-        if (panel.style.display === 'none') {
-          panel.innerHTML = chapters.map(ch =>
-            `<div onclick="window.loadCh(${ch.number})" style="padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px;color:${ch.number===currentChapter?'var(--text-primary)':'var(--text-secondary)'}">
-              <span style="font-weight:700;margin-right:8px;">${ch.number}</span>${ch.title || 'Chapter ' + ch.number}
-            </div>`
-          ).join('');
-          panel.style.display = 'block';
-        } else {
-          panel.style.display = 'none';
-        }
+      $('btn-chapters').addEventListener('click', openChaptersOverlay);
+
+      const closeBtn = $('btn-close-overlay');
+      if (closeBtn) closeBtn.addEventListener('click', closeChaptersOverlay);
+
+      const dlBtn = $('btn-download-all');
+      if (dlBtn) dlBtn.addEventListener('click', downloadAll);
+
+      // Tap dark backdrop to close (not the scroll area)
+      const overlay = $('chapters-overlay');
+      if (overlay) overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeChaptersOverlay();
       });
-      window.loadCh = (n) => { $('chapters-panel').style.display = 'none'; loadChapter(n); };
     }
+
+    window.loadCh = (n) => loadChapter(n);
 
     setInterval(() => { if (!audio.paused) saveProgress(audio.currentTime); }, 10000);
     document.addEventListener('visibilitychange', () => { if (document.hidden && !audio.paused) saveProgress(audio.currentTime); });
@@ -239,7 +371,8 @@ import Base from '../layouts/Base.astro';
       token = sessionStorage.getItem('literacy_token');
       slug  = new URLSearchParams(location.search).get('slug');
       if (!slug) { location.href = '/shelf'; return; }
-      book = null; chapters = [];
+      book = null; chapters = []; dlActive = false;
+      closeChaptersOverlay();
       wireControls();
       init();
     }
@@ -261,7 +394,6 @@ import Base from '../layouts/Base.astro';
         $('player-author').textContent = book.author;
         if (book.cover_path) $('player-cover').src = `${API}/covers/${book.slug}`;
 
-        // If returning to player for the same book — sync UI only, never restart
         if (window.__audioSlug === slug) {
           currentChapter = window.__currentChapter || 1;
           const ch = chapters.find(c => c.number === currentChapter);
@@ -270,7 +402,6 @@ import Base from '../layouts/Base.astro';
           $('player-author').textContent = book.author;
           if (book.cover_path) $('player-cover').src = `${API}/covers/${book.slug}`;
           $('btn-play').textContent = audio.paused ? '▶' : '⏸';
-          // Sync seek bar and timestamps to current audio position
           const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
           $('seek-fill').style.width  = pct + '%';
           $('seek-thumb').style.left  = pct + '%';
