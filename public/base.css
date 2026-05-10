@@ -163,7 +163,7 @@ button.secondary {
   scrollbar-width: none;
 }
 .horizontal-scroll::-webkit-scrollbar { display: none; }
-.horizontal-scroll .book-card { width: 130px; flex-shrink: 0; }
+.horizontal-scroll .book-card { width: calc((100vw - 64px) / 3); flex-shrink: 0; }
 
 .grid-3 {
   display: grid;

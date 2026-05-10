@@ -182,11 +182,15 @@ import Base from '../layouts/Base.astro';
       if (currentChapter < chapters.length) loadChapter(currentChapter + 1);
     });
 
-    $('seek-bar').addEventListener('click', (e) => {
+    function seekToX(clientX) {
       if (!audio.duration) return;
       const r = $('seek-bar').getBoundingClientRect();
-      audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
-    });
+      const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+      audio.currentTime = pct * audio.duration;
+    }
+    $('seek-bar').addEventListener('click', (e) => seekToX(e.clientX));
+    $('seek-bar').addEventListener('touchstart', (e) => { e.preventDefault(); seekToX(e.touches[0].clientX); }, { passive: false });
+    $('seek-bar').addEventListener('touchmove',  (e) => { e.preventDefault(); seekToX(e.touches[0].clientX); }, { passive: false });
 
     $('btn-play').addEventListener('click', () => {
       if (audio.paused) audio.play().catch(() => {});

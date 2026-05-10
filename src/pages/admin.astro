@@ -72,24 +72,36 @@ import Base from '../layouts/Base.astro';
       return fetch(`${API}${url}`, opts);
     }
 
+    const STATUS_LABEL = { pending: 'Pending', active: 'Active', rejected: 'Rejected' };
+    const STATUS_COLOR = { pending: 'var(--text-secondary)', active: 'var(--text-primary)', rejected: 'var(--text-muted)' };
+
     async function loadUsers() {
-      const res = await apiCall('/admin/users');
+      const res   = await apiCall('/admin/users');
       const users = await res.json();
-      const pending = users.filter(u => u.status === 'pending');
-      if (!pending.length) {
-        document.getElementById('users-list').innerHTML = '<p style="color:var(--text-muted);font-size:13px;">No pending requests.</p>';
+      if (!users.length) {
+        document.getElementById('users-list').innerHTML = '<p style="color:var(--text-muted);font-size:13px;">No users yet.</p>';
         return;
       }
-      document.getElementById('users-list').innerHTML = pending.map(u => `
+      const order = { pending: 0, active: 1, rejected: 2 };
+      users.sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
+      document.getElementById('users-list').innerHTML = users.map(u => `
         <div class="user-row">
-          <div>
+          <div style="flex:1;min-width:0;">
             <div style="font-size:14px;font-weight:600;">${u.username}</div>
-            <div style="font-size:12px;color:var(--text-secondary);">${u.email}</div>
+            <div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.email}</div>
             <div style="font-size:11px;color:var(--text-muted);">${new Date(u.created_at).toLocaleDateString()}</div>
           </div>
-          <div class="row-actions">
-            <button class="btn-sm approve" onclick="approveUser(${u.id})">Approve</button>
-            <button class="btn-sm reject"  onclick="rejectUser(${u.id})">Reject</button>
+          <div class="row-actions" style="flex-shrink:0;">
+            <span class="badge" style="color:${STATUS_COLOR[u.status] || 'inherit'}">${STATUS_LABEL[u.status] || u.status}</span>
+            ${u.status === 'pending' ? `
+              <button class="btn-sm approve" onclick="approveUser(${u.id})">Approve</button>
+              <button class="btn-sm reject"  onclick="rejectUser(${u.id})">Reject</button>
+            ` : u.status === 'active' ? `
+              <button class="btn-sm reject" onclick="deleteUser(${u.id}, '${u.username}')">Delete</button>
+            ` : `
+              <button class="btn-sm" onclick="approveUser(${u.id})">Approve</button>
+              <button class="btn-sm reject" onclick="deleteUser(${u.id}, '${u.username}')">Delete</button>
+            `}
           </div>
         </div>`).join('');
     }
@@ -123,6 +135,11 @@ import Base from '../layouts/Base.astro';
     };
     window.rejectUser = async (id) => {
       await apiCall(`/admin/users/${id}/reject`, 'POST');
+      loadUsers();
+    };
+    window.deleteUser = async (id, name) => {
+      if (!confirm(`Delete user "${name}"? This cannot be undone.`)) return;
+      await apiCall(`/admin/users/${id}`, 'DELETE');
       loadUsers();
     };
     window.toggleBook = async (slug) => {
