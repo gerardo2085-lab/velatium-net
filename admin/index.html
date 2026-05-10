@@ -1,15 +1,15 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#000000"><link rel="manifest" href="/manifest.json"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/src/styles/tokens.css"><link rel="stylesheet" href="/src/styles/noir.css"><title>Literacy — Admin</title></head> <body>  <div class="topbar"> <div class="logo"> <div class="logo-mark" style="width:32px;height:32px;"> <svg class="logo-arcs" viewBox="0 0 48 48" fill="none"> <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> </svg> <span class="logo-n" style="font-size:20px;">N</span> </div> </div> <div class="topbar-right"><a href="/shelf">← Library</a></div> </div> <div style="padding:0 20px 40px;"> <div class="admin-tabs"> <button class="tab-btn active" id="tab-access" onclick="showTab('access')">Access Requests</button> <button class="tab-btn" id="tab-catalog" onclick="showTab('catalog')">Catalog</button> </div> <div id="panel-access"> <div class="card"> <div id="users-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> <div id="panel-catalog" style="display:none;"> <div class="card"> <div id="books-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> </div> <script type="module">const c=window.API,l=sessionStorage.getItem("literacy_token");function r(t){document.getElementById("panel-access").style.display=t==="access"?"block":"none",document.getElementById("panel-catalog").style.display=t==="catalog"?"block":"none",document.getElementById("tab-access").classList.toggle("active",t==="access"),document.getElementById("tab-catalog").classList.toggle("active",t==="catalog")}window.showTab=r;async function n(t,o="GET",e=null){const s={method:o,headers:{"X-Session-Token":l}};return e&&(s.headers["Content-Type"]="application/json",s.body=JSON.stringify(e)),fetch(`${c}${t}`,s)}async function i(){const e=(await(await n("/admin/users")).json()).filter(s=>s.status==="pending");if(!e.length){document.getElementById("users-list").innerHTML='<p style="color:var(--text-muted);font-size:13px;">No pending requests.</p>';return}document.getElementById("users-list").innerHTML=e.map(s=>`
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#000000"><link rel="manifest" href="/manifest.json"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/src/styles/tokens.css"><link id="theme-css" rel="stylesheet" href="/themes/noir.css"><title>Literacy — Admin</title></head> <body>  <div class="topbar"> <div class="logo"> <div class="logo-mark" style="width:32px;height:32px;"> <svg class="logo-arcs" viewBox="0 0 48 48" fill="none"> <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> </svg> <span class="logo-n" style="font-size:20px;">N</span> </div> </div> <div class="topbar-right"><a href="/shelf">← Library</a></div> </div> <div style="padding:0 20px 40px;"> <div class="admin-tabs"> <button class="tab-btn active" id="tab-access" onclick="showTab('access')">Access Requests</button> <button class="tab-btn" id="tab-catalog" onclick="showTab('catalog')">Catalog</button> <button class="tab-btn" id="tab-themes" onclick="showTab('themes')">Themes</button> </div> <div id="panel-access"> <div class="card"> <div id="users-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> <div id="panel-catalog" style="display:none;"> <div class="card"> <div id="books-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> <div id="panel-themes" style="display:none;"> <div class="card"> <p style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;">Select a theme. New themes can be added by dropping a CSS file into <code style="color:var(--text-muted)">public/themes/</code> and deploying.</p> <div id="themes-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> </div> <script type="module">const c=window.API,r=sessionStorage.getItem("literacy_token");function l(t){["access","catalog","themes"].forEach(s=>{document.getElementById(`panel-${s}`).style.display=t===s?"block":"none",document.getElementById(`tab-${s}`).classList.toggle("active",t===s)})}window.showTab=l;async function n(t,s="GET",e=null){const o={method:s,headers:{"X-Session-Token":r}};return e&&(o.headers["Content-Type"]="application/json",o.body=JSON.stringify(e)),fetch(`${c}${t}`,o)}async function i(){const e=(await(await n("/admin/users")).json()).filter(o=>o.status==="pending");if(!e.length){document.getElementById("users-list").innerHTML='<p style="color:var(--text-muted);font-size:13px;">No pending requests.</p>';return}document.getElementById("users-list").innerHTML=e.map(o=>`
         <div class="user-row">
           <div>
-            <div style="font-size:14px;font-weight:600;">${s.username}</div>
-            <div style="font-size:12px;color:var(--text-secondary);">${s.email}</div>
-            <div style="font-size:11px;color:var(--text-muted);">${new Date(s.created_at).toLocaleDateString()}</div>
+            <div style="font-size:14px;font-weight:600;">${o.username}</div>
+            <div style="font-size:12px;color:var(--text-secondary);">${o.email}</div>
+            <div style="font-size:11px;color:var(--text-muted);">${new Date(o.created_at).toLocaleDateString()}</div>
           </div>
           <div class="row-actions">
-            <button class="btn-sm approve" onclick="approveUser(${s.id})">Approve</button>
-            <button class="btn-sm reject"  onclick="rejectUser(${s.id})">Reject</button>
+            <button class="btn-sm approve" onclick="approveUser(${o.id})">Approve</button>
+            <button class="btn-sm reject"  onclick="rejectUser(${o.id})">Reject</button>
           </div>
-        </div>`).join("")}async function a(){const o=await(await n("/admin/catalog")).json();if(!o.length){document.getElementById("books-list").innerHTML='<p style="color:var(--text-muted);font-size:13px;">No books yet.</p>';return}document.getElementById("books-list").innerHTML=o.map(e=>`
+        </div>`).join("")}async function a(){const s=await(await n("/admin/catalog")).json();if(!s.length){document.getElementById("books-list").innerHTML='<p style="color:var(--text-muted);font-size:13px;">No books yet.</p>';return}document.getElementById("books-list").innerHTML=s.map(e=>`
         <div class="book-row">
           <img src="/images/covers/${e.slug}.jpeg" onerror="this.style.display='none'"
             style="width:36px;height:54px;object-fit:cover;border-radius:4px;background:var(--bg-input);" />
@@ -22,7 +22,16 @@
             <span class="badge ${e.status}">${e.status}</span>
             <button class="btn-sm" onclick="toggleBook('${e.slug}')">${e.status==="ready"?"Hide":"Show"}</button>
           </div>
-        </div>`).join("")}window.approveUser=async t=>{await n(`/admin/users/${t}/approve`,"POST"),i()};window.rejectUser=async t=>{await n(`/admin/users/${t}/reject`,"POST"),i()};window.toggleBook=async t=>{await n(`/admin/books/${t}/toggle`,"POST"),a()};i();a();</script>  <script>(function(){const isProtected = true;
+        </div>`).join("")}window.approveUser=async t=>{await n(`/admin/users/${t}/approve`,"POST"),i()};window.rejectUser=async t=>{await n(`/admin/users/${t}/reject`,"POST"),i()};window.toggleBook=async t=>{await n(`/admin/books/${t}/toggle`,"POST"),a()};async function d(){const s=await(await n("/config/theme")).json();document.getElementById("themes-list").innerHTML=s.available.map(e=>`
+        <div class="user-row">
+          <div>
+            <div style="font-size:14px;font-weight:600;">${e.name}</div>
+            <div style="font-size:12px;color:var(--text-secondary);">${e.description}</div>
+          </div>
+          <div class="row-actions">
+            ${s.active===e.id?'<span class="badge ready">Active</span>':`<button class="btn-sm" onclick="setTheme('${e.id}')">Apply</button>`}
+          </div>
+        </div>`).join("")}window.setTheme=async t=>{await n("/config/theme","POST",{theme:t}),document.getElementById("theme-css").href=`/themes/${t}.css`,d()};i();a();d();</script>  <script>(function(){const isProtected = true;
 const adminOnly = true;
 const API = "https://api.thevelatium.net";
 
@@ -46,4 +55,14 @@ const API = "https://api.thevelatium.net";
     window.API = API;
     window.authToken = token;
     window.currentUser = user;
+
+    // Load active theme from API
+    fetch(`${API}/config/theme`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.active && d.active !== 'noir') {
+          document.getElementById('theme-css').href = `/themes/${d.active}.css`;
+        }
+      })
+      .catch(() => {});
   })();</script> </body> </html>
