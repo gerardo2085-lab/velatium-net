@@ -23,6 +23,7 @@ import Base from '../layouts/Base.astro';
     <div class="admin-tabs">
       <button class="tab-btn active" id="tab-access" onclick="showTab('access')">Access Requests</button>
       <button class="tab-btn" id="tab-catalog" onclick="showTab('catalog')">Catalog</button>
+      <button class="tab-btn" id="tab-themes" onclick="showTab('themes')">Themes</button>
     </div>
 
     <div id="panel-access">
@@ -36,6 +37,13 @@ import Base from '../layouts/Base.astro';
         <div id="books-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div>
       </div>
     </div>
+
+    <div id="panel-themes" style="display:none;">
+      <div class="card">
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;">Select a theme. New themes can be added by dropping a CSS file into <code style="color:var(--text-muted)">public/themes/</code> and deploying.</p>
+        <div id="themes-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -43,10 +51,10 @@ import Base from '../layouts/Base.astro';
     const token = sessionStorage.getItem('literacy_token');
 
     function showTab(name) {
-      document.getElementById('panel-access').style.display  = name === 'access'  ? 'block' : 'none';
-      document.getElementById('panel-catalog').style.display = name === 'catalog' ? 'block' : 'none';
-      document.getElementById('tab-access').classList.toggle('active',  name === 'access');
-      document.getElementById('tab-catalog').classList.toggle('active', name === 'catalog');
+      ['access','catalog','themes'].forEach(t => {
+        document.getElementById(`panel-${t}`).style.display = name === t ? 'block' : 'none';
+        document.getElementById(`tab-${t}`).classList.toggle('active', name === t);
+      });
     }
     window.showTab = showTab;
 
@@ -114,7 +122,31 @@ import Base from '../layouts/Base.astro';
       loadBooks();
     };
 
+    async function loadThemes() {
+      const res = await apiCall('/config/theme');
+      const d   = await res.json();
+      document.getElementById('themes-list').innerHTML = d.available.map(t => `
+        <div class="user-row">
+          <div>
+            <div style="font-size:14px;font-weight:600;">${t.name}</div>
+            <div style="font-size:12px;color:var(--text-secondary);">${t.description}</div>
+          </div>
+          <div class="row-actions">
+            ${d.active === t.id
+              ? '<span class="badge ready">Active</span>'
+              : `<button class="btn-sm" onclick="setTheme('${t.id}')">Apply</button>`}
+          </div>
+        </div>`).join('');
+    }
+
+    window.setTheme = async (id) => {
+      await apiCall('/config/theme', 'POST', { theme: id });
+      document.getElementById('theme-css').href = `/themes/${id}.css`;
+      loadThemes();
+    };
+
     loadUsers();
     loadBooks();
+    loadThemes();
   </script>
 </Base>

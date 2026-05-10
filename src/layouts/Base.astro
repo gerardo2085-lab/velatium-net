@@ -15,7 +15,7 @@ const API = 'https://api.thevelatium.net';
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/styles/tokens.css" />
-  <link rel="stylesheet" href="/src/styles/noir.css" />
+  <link id="theme-css" rel="stylesheet" href="/themes/noir.css" />
   <title>{title}</title>
 </head>
 <body>
@@ -41,6 +41,16 @@ const API = 'https://api.thevelatium.net';
     window.API = API;
     window.authToken = token;
     window.currentUser = user;
+
+    // Load active theme from API
+    fetch(`${API}/config/theme`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.active && d.active !== 'noir') {
+          document.getElementById('theme-css').href = `/themes/${d.active}.css`;
+        }
+      })
+      .catch(() => {});
   </script>
 </body>
 </html>
