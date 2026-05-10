@@ -72,6 +72,14 @@ import Base from '../layouts/Base.astro';
         location.href = '/';
       }
     }
-    load();
+    document.addEventListener('astro:page-load', () => {
+      if (!document.getElementById('recent-books')) return;
+      document.getElementById('recent-books').innerHTML = '';
+      document.getElementById('all-books').innerHTML = '';
+      document.getElementById('empty-state').style.display = 'none';
+      const usernameEl = document.getElementById('username-display');
+      if (user && usernameEl) usernameEl.textContent = user.username;
+      load();
+    });
   </script>
 </Base>

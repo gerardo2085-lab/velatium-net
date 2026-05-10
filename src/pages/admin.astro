@@ -124,6 +124,7 @@ import Base from '../layouts/Base.astro';
           </div>
           <div class="row-actions" style="flex-shrink:0;">
             <span class="badge ${b.status}">${b.status}</span>
+            <button class="btn-sm" onclick="fetchCover('${b.slug}', this)" title="Auto-fetch cover from Open Library / Google Books">Cover</button>
             <button class="btn-sm" onclick="toggleBook('${b.slug}')">${b.status === 'ready' ? 'Hide' : 'Show'}</button>
           </div>
         </div>`).join('');
@@ -145,6 +146,26 @@ import Base from '../layouts/Base.astro';
     window.toggleBook = async (slug) => {
       await apiCall(`/admin/books/${slug}/toggle`, 'POST');
       loadBooks();
+    };
+    window.fetchCover = async (slug, btn) => {
+      const orig = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '…';
+      try {
+        const res = await apiCall(`/admin/books/${slug}/fetch-cover`, 'POST');
+        if (res.ok) {
+          btn.textContent = '✓';
+          setTimeout(() => loadBooks(), 800);
+        } else {
+          const d = await res.json();
+          btn.textContent = orig;
+          btn.disabled = false;
+          alert(d.error || 'Cover fetch failed');
+        }
+      } catch {
+        btn.textContent = orig;
+        btn.disabled = false;
+      }
     };
 
     window.scanLibrary = async () => {
