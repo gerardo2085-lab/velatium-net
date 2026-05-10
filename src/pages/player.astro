@@ -36,6 +36,7 @@ import Base from '../layouts/Base.astro';
     <div class="seek-bar" id="seek-bar" style="max-width:360px;">
       <div class="seek-fill" id="seek-fill" style="width:0%"></div>
       <div id="buffer-fill" style="position:absolute;top:0;left:0;height:100%;background:var(--border);border-radius:2px;width:0%;pointer-events:none;z-index:0;"></div>
+      <div id="seek-thumb" style="position:absolute;top:50%;left:0%;transform:translate(-50%,-50%);width:14px;height:14px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:3;transition:left 0.1s linear;"></div>
     </div>
 
     <div class="controls">
@@ -163,6 +164,7 @@ import Base from '../layouts/Base.astro';
       $('time-total').textContent   = fmt(audio.duration);
       const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
       $('seek-fill').style.width = pct + '%';
+      $('seek-thumb').style.left = pct + '%';
       // buffered range indicator
       if (audio.buffered.length && audio.duration) {
         const buffEnd = audio.buffered.end(audio.buffered.length - 1);

@@ -28,13 +28,13 @@ const API = 'https://api.thevelatium.net';
 
   <slot />
 
-  <!-- Mini-player — shown on non-player pages when audio is active -->
+  <!-- Mini-player — soft-nav <a> tag so ClientRouter intercepts it (no hard reload) -->
   {isProtected && (
     <div id="mini-player" transition:persist class="mini-player" style="display:none;">
-      <div class="mini-info" id="mini-info-tap">
+      <a href="#" id="mini-info-tap" class="mini-info">
         <div id="mini-title" class="mini-title">—</div>
         <div id="mini-chapter" class="mini-chapter">—</div>
-      </div>
+      </a>
       <button id="mini-btn" class="mini-btn" aria-label="Play/Pause">
         <svg id="mini-icon-play" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         <svg id="mini-icon-pause" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
@@ -47,10 +47,6 @@ const API = 'https://api.thevelatium.net';
       <a href="/shelf" class="nav-item" data-page="shelf">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13"/><path d="M4 19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><line x1="9" y1="10" x2="15" y2="10"/></svg>
         <span>Library</span>
-      </a>
-      <a href="/player" class="nav-item" data-page="player" id="nav-player">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-        <span>Now Playing</span>
       </a>
       <a href="/admin" class="nav-item" data-page="admin" id="nav-admin" style="display:none;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -89,7 +85,7 @@ const API = 'https://api.thevelatium.net';
 
     .mini-player {
       position: fixed;
-      bottom: 62px; left: 0; right: 0;
+      bottom: calc(62px + env(safe-area-inset-bottom)); left: 0; right: 0;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -171,13 +167,6 @@ const API = 'https://api.thevelatium.net';
         if (c) c.textContent = chapterLabel;
         if (mp) mp.style.display = 'flex';
         document.body.classList.add('has-mini-player');
-        // Keep Now Playing nav link pointing at the right slug
-        const pl = document.getElementById('nav-player');
-        if (pl) {
-          pl.href = `/player?slug=${slug}`;
-          pl.style.opacity = '1';
-          pl.style.pointerEvents = 'auto';
-        }
         syncMiniPlayIcon();
       };
 
@@ -210,26 +199,10 @@ const API = 'https://api.thevelatium.net';
           if (al) al.style.display = 'flex';
         }
 
-        // Now Playing link — point at current slug if audio active, else last played
-        const activeSlug = window.__audioSlug || localStorage.getItem('literacy_last_slug');
-        const pl = document.getElementById('nav-player');
-        if (pl) {
-          if (activeSlug) {
-            pl.href            = `/player?slug=${activeSlug}`;
-            pl.style.opacity   = '1';
-            pl.style.pointerEvents = 'auto';
-          } else {
-            pl.style.opacity       = '0.35';
-            pl.style.pointerEvents = 'none';
-          }
-        }
-
-        // Mini-player tap → go to player
+        // Mini-player tap → update href so ClientRouter handles soft navigation
         const miniInfo = document.getElementById('mini-info-tap');
-        if (miniInfo) {
-          miniInfo.onclick = () => {
-            if (window.__audioSlug) location.href = `/player?slug=${window.__audioSlug}`;
-          };
+        if (miniInfo && window.__audioSlug) {
+          miniInfo.href = `/player?slug=${window.__audioSlug}`;
         }
 
         // Mini-player play/pause button
