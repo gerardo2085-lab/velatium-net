@@ -263,8 +263,12 @@ import Base from '../layouts/Base.astro';
       loadThemes();
     };
 
-    loadUsers();
-    loadBooks();
-    loadThemes();
+    function initAdmin() {
+      if (!document.getElementById('users-list')) return;
+      loadUsers();
+      loadBooks();
+      loadThemes();
+    }
+    document.addEventListener('astro:page-load', initAdmin);
   </script>
 </Base>

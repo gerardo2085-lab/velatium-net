@@ -270,6 +270,12 @@ import Base from '../layouts/Base.astro';
           $('player-author').textContent = book.author;
           if (book.cover_path) $('player-cover').src = `${API}/covers/${book.slug}`;
           $('btn-play').textContent = audio.paused ? '▶' : '⏸';
+          // Sync seek bar and timestamps to current audio position
+          const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+          $('seek-fill').style.width  = pct + '%';
+          $('seek-thumb').style.left  = pct + '%';
+          $('time-elapsed').textContent = fmt(audio.currentTime);
+          $('time-total').textContent   = fmt(audio.duration);
           setBuffering(false);
           return;
         }
