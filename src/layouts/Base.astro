@@ -14,12 +14,63 @@ const API = 'https://api.thevelatium.net';
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/src/styles/tokens.css" />
+  <link rel="stylesheet" href="/tokens.css" />
   <link id="theme-css" rel="stylesheet" href="/themes/noir.css" />
   <title>{title}</title>
 </head>
 <body>
   <slot />
+
+  {isProtected && (
+    <nav class="bottom-nav" id="bottom-nav">
+      <a href="/shelf" class="nav-item" data-page="shelf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13"/><path d="M4 19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><line x1="9" y1="10" x2="15" y2="10"/></svg>
+        <span>Library</span>
+      </a>
+      <a href="/player" class="nav-item" data-page="player" id="nav-player">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        <span>Now Playing</span>
+      </a>
+      <a href="/admin" class="nav-item nav-admin" data-page="admin" id="nav-admin" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span>Admin</span>
+      </a>
+    </nav>
+  )}
+
+  <style is:global>
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 100;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 0 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      transition: color 200ms;
+    }
+    .nav-item svg { width: 22px; height: 22px; }
+    .nav-item.active { color: var(--text-primary); }
+    .nav-item:hover { color: var(--text-secondary); }
+    /* push page content above the nav */
+    body { padding-bottom: calc(62px + env(safe-area-inset-bottom)); }
+  </style>
+
   <script define:vars={{ isProtected, adminOnly, API }}>
     const token = sessionStorage.getItem('literacy_token');
     const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
@@ -51,6 +102,26 @@ const API = 'https://api.thevelatium.net';
         }
       })
       .catch(() => {});
+
+    // Bottom nav — mark active page, show admin link if admin
+    if (isProtected) {
+      const page = location.pathname.replace(/\/$/, '').split('/').pop() || 'shelf';
+      const activeLink = document.querySelector(`.nav-item[data-page="${page}"]`);
+      if (activeLink) activeLink.classList.add('active');
+
+      if (user && user.role === 'admin') {
+        const adminLink = document.getElementById('nav-admin');
+        if (adminLink) adminLink.style.display = 'flex';
+      }
+
+      // Grey out Now Playing if no book is in progress
+      const lastSlug = localStorage.getItem('literacy_last_slug');
+      const playerLink = document.getElementById('nav-player');
+      if (playerLink && !lastSlug) {
+        playerLink.style.opacity = '0.35';
+        playerLink.style.pointerEvents = 'none';
+      }
+    }
   </script>
 </body>
 </html>

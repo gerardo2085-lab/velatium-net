@@ -202,6 +202,7 @@ import Base from '../layouts/Base.astro';
           fetch(`${API}/progress/${slug}`,       { headers: { 'X-Session-Token': token } }),
         ]);
         if (!bRes.ok) { location.href = '/shelf'; return; }
+        localStorage.setItem('literacy_last_slug', slug);
         book     = await bRes.json();
         chapters = await cRes.json();
         const prog = pRes.ok ? await pRes.json() : {};
