@@ -30,10 +30,12 @@ import Base from '../layouts/Base.astro';
 
     <div class="time-row" style="width:100%;max-width:360px;">
       <span id="time-elapsed">0:00</span>
+      <span id="buffer-label" style="font-size:10px;color:var(--text-muted);display:none;">Buffering…</span>
       <span id="time-total">0:00</span>
     </div>
     <div class="seek-bar" id="seek-bar" style="max-width:360px;">
       <div class="seek-fill" id="seek-fill" style="width:0%"></div>
+      <div id="buffer-fill" style="position:absolute;top:0;left:0;height:100%;background:var(--border);border-radius:2px;width:0%;pointer-events:none;z-index:0;"></div>
     </div>
 
     <div class="controls">
@@ -87,6 +89,10 @@ import Base from '../layouts/Base.astro';
       return `${m}:${sec.toString().padStart(2,'0')}`;
     }
 
+    function audioUrl(n) {
+      return `${API}/books/${slug}/chapters/${n}/audio?token=${encodeURIComponent(token)}`;
+    }
+
     async function getAudioSrc(n) {
       try {
         const root = await navigator.storage.getDirectory();
@@ -94,17 +100,18 @@ import Base from '../layouts/Base.astro';
         const fh   = await dir.getFileHandle(`ch-${n}.mp3`);
         return URL.createObjectURL(await fh.getFile());
       } catch {
-        return `${API}/books/${slug}/chapters/${n}/audio`;
+        return audioUrl(n);
       }
     }
 
     async function downloadChapter(n) {
       try {
-        const res  = await fetch(`${API}/books/${slug}/chapters/${n}/audio`, { headers: { 'X-Session-Token': token } });
         const root = await navigator.storage.getDirectory();
         const dir  = await root.getDirectoryHandle(`book-${slug}`, { create: true });
-        const fh   = await dir.getFileHandle(`ch-${n}.mp3`, { create: true });
-        const w    = await fh.createWritable();
+        try { await dir.getFileHandle(`ch-${n}.mp3`); return; } catch {}  // already cached
+        const res = await fetch(audioUrl(n));
+        const fh  = await dir.getFileHandle(`ch-${n}.mp3`, { create: true });
+        const w   = await fh.createWritable();
         await res.body.pipeTo(w);
       } catch {}
     }
@@ -141,14 +148,30 @@ import Base from '../layouts/Base.astro';
       }).catch(() => {});
     }
 
+    function setBuffering(on) {
+      $('buffer-label').style.display = on ? 'inline' : 'none';
+      $('btn-play').style.opacity = on ? '0.4' : '1';
+    }
+
     audio.addEventListener('timeupdate', () => {
       $('time-elapsed').textContent = fmt(audio.currentTime);
       $('time-total').textContent   = fmt(audio.duration);
       const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
       $('seek-fill').style.width = pct + '%';
+      // buffered range indicator
+      if (audio.buffered.length && audio.duration) {
+        const buffEnd = audio.buffered.end(audio.buffered.length - 1);
+        $('buffer-fill').style.width = ((buffEnd / audio.duration) * 100) + '%';
+      }
     });
-    audio.addEventListener('play',  () => { $('btn-play').textContent = '⏸'; });
-    audio.addEventListener('pause', () => { $('btn-play').textContent = '▶'; });
+    audio.addEventListener('waiting',    () => setBuffering(true));
+    audio.addEventListener('stalled',    () => setBuffering(true));
+    audio.addEventListener('canplay',    () => setBuffering(false));
+    audio.addEventListener('playing',    () => setBuffering(false));
+    audio.addEventListener('loadstart',  () => setBuffering(true));
+    audio.addEventListener('loadeddata', () => setBuffering(false));
+    audio.addEventListener('play',  () => { $('btn-play').textContent = '⏸'; setBuffering(false); });
+    audio.addEventListener('pause', () => { $('btn-play').textContent = '▶'; setBuffering(false); });
     audio.addEventListener('ended', () => {
       saveProgress(audio.duration, true);
       if (currentChapter < chapters.length) loadChapter(currentChapter + 1);
@@ -209,7 +232,7 @@ import Base from '../layouts/Base.astro';
         $('player-title').textContent  = book.title;
         $('player-author').textContent = book.author;
         if (book.cover_path) {
-          $('player-cover').src = `/images/covers/${book.slug}.jpeg`;
+          $('player-cover').src = `${API}/covers/${book.slug}`;
         }
         const startChapter = prog.chapter_id
           ? (chapters.find(c => c.id === prog.chapter_id)?.number || 1)

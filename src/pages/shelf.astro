@@ -41,7 +41,7 @@ import Base from '../layouts/Base.astro';
 
     function bookCardHTML(book, small = false) {
       const cover = book.cover_path
-        ? `/images/covers/${book.slug}.jpeg`
+        ? `${window.API}/covers/${book.slug}`
         : `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='300' viewBox='0 0 200 300'><rect width='200' height='300' fill='%231a1a1a'/><text x='100' y='155' text-anchor='middle' fill='%23444' font-size='14' font-family='sans-serif'>${encodeURIComponent(book.title.slice(0,12))}</text></svg>`;
       return `
         <div class="book-card" onclick="location.href='/player?slug=${book.slug}'">

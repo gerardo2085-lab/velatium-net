@@ -103,7 +103,7 @@ import Base from '../layouts/Base.astro';
       }
       document.getElementById('books-list').innerHTML = books.map(b => `
         <div class="book-row">
-          <img src="/images/covers/${b.slug}.jpeg" onerror="this.style.display='none'"
+          <img src="${API}/covers/${b.slug}" onerror="this.style.display='none'"
             style="width:36px;height:54px;object-fit:cover;border-radius:4px;background:var(--bg-input);" />
           <div style="flex:1;min-width:0;">
             <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${b.title}</div>
