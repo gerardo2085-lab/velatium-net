@@ -242,12 +242,13 @@ import Base from '../layouts/Base.astro';
         $('player-author').textContent = book.author;
         if (book.cover_path) $('player-cover').src = `${API}/covers/${book.slug}`;
 
-        // If returning to player and this slug is already playing, just sync UI
-        if (window.__audioSlug === slug && !audio.paused) {
+        // If returning to player for the same book — sync UI only, never restart
+        if (window.__audioSlug === slug) {
           currentChapter = window.__currentChapter || 1;
           const ch = chapters.find(c => c.number === currentChapter);
           if (ch) $('chapter-label').textContent = `CHAPTER ${currentChapter}${ch.title ? ': ' + ch.title : ''}`;
-          $('btn-play').textContent = '⏸';
+          $('btn-play').textContent = audio.paused ? '▶' : '⏸';
+          setBuffering(false);
           return;
         }
 
