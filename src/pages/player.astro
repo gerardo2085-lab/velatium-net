@@ -77,7 +77,9 @@ import Base from '../layouts/Base.astro';
     if (!slug) location.href = '/shelf';
 
     let book = null, chapters = [], currentChapter = 1, playbackRate = 1;
-    const audio = new Audio();
+    // Use the persistent global audio element from Base.astro
+    const audio = document.getElementById('global-audio') || new Audio();
+    window.__audio = audio;
     const speeds = [0.75, 1, 1.25, 1.5, 2];
     let speedIdx = 1;
 
@@ -127,7 +129,10 @@ import Base from '../layouts/Base.astro';
       currentChapter = n;
       const ch = chapters.find(c => c.number === n);
       if (!ch) return;
-      $('chapter-label').textContent = `CHAPTER ${n}${ch.title ? ': ' + ch.title : ''}`;
+      const chapterLabel = `CHAPTER ${n}${ch.title ? ': ' + ch.title : ''}`;
+      $('chapter-label').textContent = chapterLabel;
+      if (book && window.__updateMiniPlayer) window.__updateMiniPlayer(slug, book.title, chapterLabel);
+      window.__currentChapter = n;
       audio.pause();
       if (ch.audio_path !== null || ch.duration_seconds) {
         const src = await getAudioSrc(n);
@@ -231,9 +236,17 @@ import Base from '../layouts/Base.astro';
         const prog = pRes.ok ? await pRes.json() : {};
         $('player-title').textContent  = book.title;
         $('player-author').textContent = book.author;
-        if (book.cover_path) {
-          $('player-cover').src = `${API}/covers/${book.slug}`;
+        if (book.cover_path) $('player-cover').src = `${API}/covers/${book.slug}`;
+
+        // If returning to player and this slug is already playing, just sync UI
+        if (window.__audioSlug === slug && !audio.paused) {
+          currentChapter = window.__currentChapter || 1;
+          const ch = chapters.find(c => c.number === currentChapter);
+          if (ch) $('chapter-label').textContent = `CHAPTER ${currentChapter}${ch.title ? ': ' + ch.title : ''}`;
+          $('btn-play').textContent = '⏸';
+          return;
         }
+
         const startChapter = prog.chapter_id
           ? (chapters.find(c => c.id === prog.chapter_id)?.number || 1)
           : 1;

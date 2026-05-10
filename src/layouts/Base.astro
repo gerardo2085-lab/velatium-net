@@ -1,4 +1,5 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
 const { title = 'Literacy', protected: isProtected = false, adminOnly = false } = Astro.props;
 const API = 'https://api.thevelatium.net';
 ---
@@ -17,9 +18,28 @@ const API = 'https://api.thevelatium.net';
   <link rel="stylesheet" href="/tokens.css" />
   <link id="theme-css" rel="stylesheet" href="/themes/noir.css" />
   <title>{title}</title>
+  <ViewTransitions />
 </head>
 <body>
+
+  <!-- Persistent audio engine — survives page transitions -->
+  <audio id="global-audio" transition:persist></audio>
+
   <slot />
+
+  <!-- Mini-player — shown on non-player pages when audio is active -->
+  {isProtected && (
+    <div id="mini-player" transition:persist class="mini-player" style="display:none;">
+      <div class="mini-info" id="mini-info-tap">
+        <div id="mini-title" class="mini-title">—</div>
+        <div id="mini-chapter" class="mini-chapter">—</div>
+      </div>
+      <button id="mini-btn" class="mini-btn" aria-label="Play/Pause">
+        <svg id="mini-icon-play" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg id="mini-icon-pause" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+    </div>
+  )}
 
   {isProtected && (
     <nav class="bottom-nav" id="bottom-nav">
@@ -31,7 +51,7 @@ const API = 'https://api.thevelatium.net';
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
         <span>Now Playing</span>
       </a>
-      <a href="/admin" class="nav-item nav-admin" data-page="admin" id="nav-admin" style="display:none;">
+      <a href="/admin" class="nav-item" data-page="admin" id="nav-admin" style="display:none;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         <span>Admin</span>
       </a>
@@ -41,9 +61,7 @@ const API = 'https://api.thevelatium.net';
   <style is:global>
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       display: flex;
       background: var(--bg-surface);
       border-top: 1px solid var(--border);
@@ -67,59 +85,161 @@ const API = 'https://api.thevelatium.net';
     .nav-item svg { width: 22px; height: 22px; }
     .nav-item.active { color: var(--text-primary); }
     .nav-item:hover { color: var(--text-secondary); }
-    /* push page content above the nav */
+
+    .mini-player {
+      position: fixed;
+      bottom: 62px; left: 0; right: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      z-index: 99;
+    }
+    .mini-info { flex: 1; min-width: 0; cursor: pointer; }
+    .mini-title {
+      font-size: 13px; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mini-chapter { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    .mini-btn {
+      background: none; border: none;
+      color: var(--text-primary);
+      cursor: pointer; padding: 6px;
+      width: auto; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* body bottom padding — base (no mini-player) */
     body { padding-bottom: calc(62px + env(safe-area-inset-bottom)); }
+    /* when mini-player visible */
+    body.has-mini-player { padding-bottom: calc(122px + env(safe-area-inset-bottom)); }
   </style>
 
   <script define:vars={{ isProtected, adminOnly, API }}>
-    const token = sessionStorage.getItem('literacy_token');
-    const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
-
-    if (isProtected && !token) {
-      location.href = '/';
-    }
-    if (adminOnly && (!user || user.role !== 'admin')) {
-      location.href = '/shelf';
-    }
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-    if (navigator.storage && navigator.storage.persist) {
-      navigator.storage.persist().catch(() => {});
-    }
-
     window.API = API;
-    window.authToken = token;
-    window.currentUser = user;
 
-    // Load active theme from API
+    // ── Auth ──────────────────────────────────────────────────────────────
+    function checkAuth() {
+      const token = sessionStorage.getItem('literacy_token');
+      const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+      window.authToken   = token;
+      window.currentUser = user;
+      if (isProtected && !token)                        { location.href = '/'; return; }
+      if (adminOnly && (!user || user.role !== 'admin')){ location.href = '/shelf'; return; }
+    }
+    checkAuth();
+
+    // ── Service worker ────────────────────────────────────────────────────
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
+
+    // ── Theme ─────────────────────────────────────────────────────────────
     fetch(`${API}/config/theme`)
       .then(r => r.json())
       .then(d => {
-        if (d.active && d.active !== 'noir') {
+        if (d.active && d.active !== 'noir')
           document.getElementById('theme-css').href = `/themes/${d.active}.css`;
-        }
-      })
-      .catch(() => {});
+      }).catch(() => {});
 
-    // Bottom nav — mark active page, show admin link if admin
-    if (isProtected) {
-      const page = location.pathname.replace(/\/$/, '').split('/').pop() || 'shelf';
-      const activeLink = document.querySelector(`.nav-item[data-page="${page}"]`);
-      if (activeLink) activeLink.classList.add('active');
+    // ── Global audio (set up once, persists across View Transitions) ──────
+    if (!window.__audioReady) {
+      window.__audioReady = true;
+      const audio = document.getElementById('global-audio');
+      window.__audio     = audio;
+      window.__audioSlug = null;
 
-      if (user && user.role === 'admin') {
-        const adminLink = document.getElementById('nav-admin');
-        if (adminLink) adminLink.style.display = 'flex';
+      function syncMiniPlayIcon() {
+        const play  = document.getElementById('mini-icon-play');
+        const pause = document.getElementById('mini-icon-pause');
+        if (!play || !pause) return;
+        play.style.display  = audio.paused ? 'block' : 'none';
+        pause.style.display = audio.paused ? 'none'  : 'block';
       }
 
-      // Grey out Now Playing if no book is in progress
-      const lastSlug = localStorage.getItem('literacy_last_slug');
-      const playerLink = document.getElementById('nav-player');
-      if (playerLink && !lastSlug) {
-        playerLink.style.opacity = '0.35';
-        playerLink.style.pointerEvents = 'none';
+      audio.addEventListener('play',  syncMiniPlayIcon);
+      audio.addEventListener('pause', syncMiniPlayIcon);
+      audio.addEventListener('ended', syncMiniPlayIcon);
+
+      window.__updateMiniPlayer = (slug, bookTitle, chapterLabel) => {
+        window.__audioSlug = slug;
+        const mp = document.getElementById('mini-player');
+        const t  = document.getElementById('mini-title');
+        const c  = document.getElementById('mini-chapter');
+        if (t) t.textContent = bookTitle;
+        if (c) c.textContent = chapterLabel;
+        if (mp) mp.style.display = 'flex';
+        document.body.classList.add('has-mini-player');
+        syncMiniPlayIcon();
+      };
+
+      window.__hideMiniPlayer = () => {
+        const mp = document.getElementById('mini-player');
+        if (mp) mp.style.display = 'none';
+        document.body.classList.remove('has-mini-player');
+        window.__audioSlug = null;
+      };
+    }
+
+    // ── Per-navigation wiring (runs on every page load / transition) ──────
+    document.addEventListener('astro:page-load', wireNav);
+    wireNav(); // also run immediately for first load
+
+    function wireNav() {
+      const token = sessionStorage.getItem('literacy_token');
+      const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+
+      // Active nav link
+      if (isProtected) {
+        const page = location.pathname.replace(/\/$/, '').split('/').pop() || 'shelf';
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        const activeLink = document.querySelector(`.nav-item[data-page="${page}"]`);
+        if (activeLink) activeLink.classList.add('active');
+
+        // Show admin link
+        if (user?.role === 'admin') {
+          const al = document.getElementById('nav-admin');
+          if (al) al.style.display = 'flex';
+        }
+
+        // Now Playing link — enable once a book has been played
+        const lastSlug = localStorage.getItem('literacy_last_slug');
+        const pl = document.getElementById('nav-player');
+        if (pl) {
+          pl.style.opacity        = lastSlug ? '1' : '0.35';
+          pl.style.pointerEvents  = lastSlug ? 'auto' : 'none';
+        }
+
+        // Mini-player tap → go to player
+        const miniInfo = document.getElementById('mini-info-tap');
+        if (miniInfo) {
+          miniInfo.onclick = () => {
+            if (window.__audioSlug) location.href = `/player?slug=${window.__audioSlug}`;
+          };
+        }
+
+        // Mini-player play/pause button
+        const miniBtn = document.getElementById('mini-btn');
+        if (miniBtn) {
+          miniBtn.onclick = () => {
+            const a = window.__audio || document.getElementById('global-audio');
+            if (!a) return;
+            if (a.paused) a.play().catch(() => {}); else a.pause();
+          };
+        }
+
+        // Hide mini-player on player page (controls are right there)
+        const onPlayer = location.pathname.includes('/player');
+        const mp = document.getElementById('mini-player');
+        if (mp) {
+          if (onPlayer) {
+            mp.style.display = 'none';
+            document.body.classList.remove('has-mini-player');
+          } else if (window.__audioSlug) {
+            mp.style.display = 'flex';
+            document.body.classList.add('has-mini-player');
+          }
+        }
       }
     }
   </script>
