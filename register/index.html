@@ -57,6 +57,13 @@ const API = "https://api.thevelatium.net";
         if (c) c.textContent = chapterLabel;
         if (mp) mp.style.display = 'flex';
         document.body.classList.add('has-mini-player');
+        // Keep Now Playing nav link pointing at the right slug
+        const pl = document.getElementById('nav-player');
+        if (pl) {
+          pl.href = `/player?slug=${slug}`;
+          pl.style.opacity = '1';
+          pl.style.pointerEvents = 'auto';
+        }
         syncMiniPlayIcon();
       };
 
@@ -89,12 +96,18 @@ const API = "https://api.thevelatium.net";
           if (al) al.style.display = 'flex';
         }
 
-        // Now Playing link — enable once a book has been played
-        const lastSlug = localStorage.getItem('literacy_last_slug');
+        // Now Playing link — point at current slug if audio active, else last played
+        const activeSlug = window.__audioSlug || localStorage.getItem('literacy_last_slug');
         const pl = document.getElementById('nav-player');
         if (pl) {
-          pl.style.opacity        = lastSlug ? '1' : '0.35';
-          pl.style.pointerEvents  = lastSlug ? 'auto' : 'none';
+          if (activeSlug) {
+            pl.href            = `/player?slug=${activeSlug}`;
+            pl.style.opacity   = '1';
+            pl.style.pointerEvents = 'auto';
+          } else {
+            pl.style.opacity       = '0.35';
+            pl.style.pointerEvents = 'none';
+          }
         }
 
         // Mini-player tap → go to player

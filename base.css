@@ -225,10 +225,13 @@ button.secondary {
   margin-bottom: 28px;
 }
 .seek-fill {
+  position: absolute;
+  top: 0; left: 0;
   height: 100%;
   background: var(--accent);
   border-radius: 2px;
   pointer-events: none;
+  z-index: 2;
 }
 .controls {
   display: flex;
