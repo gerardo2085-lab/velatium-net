@@ -1,0 +1,84 @@
+/* ============================================================
+   LITERACY THEME TEMPLATE
+   ============================================================
+
+   HOW TO CREATE A THEME
+   ─────────────────────
+   1. Duplicate this file and rename it: public/themes/your-theme.css
+   2. Fill in all the :root variables below.
+   3. Optionally add component overrides at the bottom.
+   4. Drop the file into public/themes/ and deploy.
+   5. Register it in api_service.py → AVAILABLE_THEMES list:
+        {"id": "your-theme", "name": "Your Theme", "description": "One line description"}
+   6. It will appear in Admin → Themes automatically.
+
+   LOAD ORDER (do not change)
+   ──────────────────────────
+   tokens.css  → default variable fallbacks (always loaded)
+   base.css    → all component styles, uses the variables (always loaded)
+   theme.css   → YOU ARE HERE — overrides the variables (swapped at runtime)
+
+   You only need to define the variables that differ from the defaults.
+   All component styles (cards, player, nav, buttons, etc.) adapt automatically.
+
+   VARIABLE REFERENCE
+   ──────────────────
+
+   Backgrounds (darkest → lightest)
+     --bg             Page background. The very bottom layer.
+     --bg-surface     Topbar, bottom nav, mini-player background.
+     --bg-card        Cards, panels, the player container.
+     --bg-input       Input fields, secondary buttons, badges.
+
+   Text (most prominent → least prominent)
+     --text-primary   Main text, active nav items, headings.
+     --text-secondary Labels, metadata, author names.
+     --text-muted     Placeholder text, disabled items, decorative elements.
+
+   Accent (interactive / highlight color)
+     --accent         Primary button background, play button, active seek fill.
+                      On dark themes: white. On light themes: a brand color.
+     --accent-dim     Hover state on bordered cards, subtle highlights.
+                      Usually a muted version of --accent.
+
+   Borders
+     --border         Default border for cards, inputs, dividers.
+     --border-focus   Input focus ring, active state borders.
+
+   ============================================================ */
+
+:root {
+  /* ── Backgrounds ─────────────────────── */
+  --bg:             #000000;    /* page background          */
+  --bg-surface:     #111111;    /* nav / topbar             */
+  --bg-card:        #1a1a1a;    /* cards / panels           */
+  --bg-input:       #222222;    /* inputs / secondary btns  */
+
+  /* ── Text ────────────────────────────── */
+  --text-primary:   #ffffff;    /* headings, active items   */
+  --text-secondary: #888888;    /* labels, metadata         */
+  --text-muted:     #444444;    /* placeholders, disabled   */
+
+  /* ── Accent ──────────────────────────── */
+  --accent:         #ffffff;    /* primary button / play btn */
+  --accent-dim:     #555555;    /* card hover, subtle hi     */
+
+  /* ── Borders ─────────────────────────── */
+  --border:         #2a2a2a;    /* default borders           */
+  --border-focus:   #555555;    /* input focus ring          */
+}
+
+/* ── Optional: component overrides ─────────────────────────────────────────
+   Only add rules here if you need to change something beyond variable values.
+   Examples:
+
+   Primary button text color (needed if --accent is not white):
+   button { color: #ffffff; }
+
+   Custom font pairing:
+   @import url('https://fonts.googleapis.com/css2?family=Lora:ital@0;1&display=swap');
+   :root { --font-display: 'Lora', serif; --font-body: 'Lora', serif; }
+
+   Link color:
+   a { color: var(--accent); }
+   ─────────────────────────────────────────────────────────────────────────── */

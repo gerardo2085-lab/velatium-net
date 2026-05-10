@@ -1,56 +1,131 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#000000"><link rel="manifest" href="/manifest.json"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/tokens.css"><link id="theme-css" rel="stylesheet" href="/themes/noir.css"><title>Literacy — Admin</title><style>.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg-surface);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);z-index:100}.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 8px;color:var(--text-muted);text-decoration:none;font-size:10px;font-weight:600;letter-spacing:.04em;transition:color .2s}.nav-item svg{width:22px;height:22px}.nav-item.active{color:var(--text-primary)}.nav-item:hover{color:var(--text-secondary)}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}
-</style></head> <body>  <div class="topbar"> <div class="logo"> <div class="logo-mark" style="width:32px;height:32px;"> <svg class="logo-arcs" viewBox="0 0 48 48" fill="none"> <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> </svg> <span class="logo-n" style="font-size:20px;">N</span> </div> </div> <div class="topbar-right"><a href="/shelf">← Library</a></div> </div> <div style="padding:0 20px 40px;"> <div class="admin-tabs"> <button class="tab-btn active" id="tab-access" onclick="showTab('access')">Access Requests</button> <button class="tab-btn" id="tab-catalog" onclick="showTab('catalog')">Catalog</button> <button class="tab-btn" id="tab-themes" onclick="showTab('themes')">Themes</button> </div> <div id="panel-access"> <div class="card"> <div id="users-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> <div id="panel-catalog" style="display:none;"> <div class="card" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;"> <div> <div style="font-size:13px;font-weight:600;">Library Scan</div> <div style="font-size:11px;color:var(--text-secondary);">Detect new folders in the server library and add them automatically.</div> </div> <button class="btn-sm approve" id="scan-btn" onclick="scanLibrary()" style="white-space:nowrap;">Scan Library</button> </div> <div id="scan-result" style="display:none;margin-bottom:12px;font-size:12px;padding:10px 14px;background:var(--bg-input);border-radius:8px;"></div> <div class="card"> <div id="books-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> <div id="panel-themes" style="display:none;"> <div class="card"> <p style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;">Select a theme. New themes can be added by dropping a CSS file into <code style="color:var(--text-muted)">public/themes/</code> and deploying.</p> <div id="themes-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> </div> <script type="module" src="/_astro/admin.astro_astro_type_script_index_0_lang.CBUf-CPi.js"></script>  <nav class="bottom-nav" id="bottom-nav"> <a href="/shelf" class="nav-item" data-page="shelf"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13"></path><path d="M4 19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"></path><line x1="9" y1="10" x2="15" y2="10"></line></svg> <span>Library</span> </a> <a href="/player" class="nav-item" data-page="player" id="nav-player"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg> <span>Now Playing</span> </a> <a href="/admin" class="nav-item nav-admin" data-page="admin" id="nav-admin" style="display:none;"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg> <span>Admin</span> </a> </nav>  <script>(function(){const isProtected = true;
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#000000"><link rel="manifest" href="/manifest.json"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/tokens.css"><link rel="stylesheet" href="/base.css"><link id="theme-css" rel="stylesheet" href="/themes/noir.css"><title>Literacy — Admin</title><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.CAqDO0tx.js"></script><style>.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg-surface);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);z-index:100}.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 8px;color:var(--text-muted);text-decoration:none;font-size:10px;font-weight:600;letter-spacing:.04em;transition:color .2s}.nav-item svg{width:22px;height:22px}.nav-item.active{color:var(--text-primary)}.nav-item:hover{color:var(--text-secondary)}.mini-player{position:fixed;bottom:62px;left:0;right:0;display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--bg-card);border-top:1px solid var(--border);z-index:99}.mini-info{flex:1;min-width:0;cursor:pointer}.mini-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-chapter{font-size:11px;color:var(--text-secondary);margin-top:2px}.mini-btn{background:none;border:none;color:var(--text-primary);cursor:pointer;padding:6px;width:auto;display:flex;align-items:center;justify-content:center}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}body.has-mini-player{padding-bottom:calc(122px + env(safe-area-inset-bottom))}@keyframes astroFadeInOut{0%{opacity:1}to{opacity:0}}@keyframes astroFadeIn{0%{opacity:0;mix-blend-mode:plus-lighter}to{opacity:1;mix-blend-mode:plus-lighter}}@keyframes astroFadeOut{0%{opacity:1;mix-blend-mode:plus-lighter}to{opacity:0;mix-blend-mode:plus-lighter}}@keyframes astroSlideFromRight{0%{transform:translate(100%)}}@keyframes astroSlideFromLeft{0%{transform:translate(-100%)}}@keyframes astroSlideToRight{to{transform:translate(100%)}}@keyframes astroSlideToLeft{to{transform:translate(-100%)}}@media(prefers-reduced-motion){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}[data-astro-transition-scope]{animation:none!important}}
+</style></head> <body> <!-- Persistent audio engine — survives page transitions --> <audio id="global-audio" data-astro-transition-persist="astro-lennmlil-1"></audio>  <div class="topbar"> <div class="logo"> <div class="logo-mark" style="width:32px;height:32px;"> <svg class="logo-arcs" viewBox="0 0 48 48" fill="none"> <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> </svg> <span class="logo-n" style="font-size:20px;">N</span> </div> </div> <div class="topbar-right"><a href="/shelf">← Library</a></div> </div> <div style="padding:0 20px 40px;"> <div class="admin-tabs"> <button class="tab-btn active" id="tab-access" onclick="showTab('access')">Access Requests</button> <button class="tab-btn" id="tab-catalog" onclick="showTab('catalog')">Catalog</button> <button class="tab-btn" id="tab-themes" onclick="showTab('themes')">Themes</button> </div> <div id="panel-access"> <div class="card"> <div id="users-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> <div id="panel-catalog" style="display:none;"> <div class="card" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;"> <div> <div style="font-size:13px;font-weight:600;">Library Scan</div> <div style="font-size:11px;color:var(--text-secondary);">Detect new folders in the server library and add them automatically.</div> </div> <button class="btn-sm approve" id="scan-btn" onclick="scanLibrary()" style="white-space:nowrap;">Scan Library</button> </div> <div id="scan-result" style="display:none;margin-bottom:12px;font-size:12px;padding:10px 14px;background:var(--bg-input);border-radius:8px;"></div> <div class="card"> <div id="books-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> <div id="panel-themes" style="display:none;"> <div class="card"> <p style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;">Select a theme. New themes can be added by dropping a CSS file into <code style="color:var(--text-muted)">public/themes/</code> and deploying.</p> <div id="themes-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div> </div> </div> </div> <script type="module" src="/_astro/admin.astro_astro_type_script_index_0_lang.Dq5mN_s9.js"></script>  <!-- Mini-player — shown on non-player pages when audio is active --> <div id="mini-player" class="mini-player" style="display:none;" data-astro-transition-persist="astro-fvg4dbco-2"> <div class="mini-info" id="mini-info-tap"> <div id="mini-title" class="mini-title">—</div> <div id="mini-chapter" class="mini-chapter">—</div> </div> <button id="mini-btn" class="mini-btn" aria-label="Play/Pause"> <svg id="mini-icon-play" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> <svg id="mini-icon-pause" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" style="display:none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> </button> </div> <nav class="bottom-nav" id="bottom-nav"> <a href="/shelf" class="nav-item" data-page="shelf"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13"></path><path d="M4 19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"></path><line x1="9" y1="10" x2="15" y2="10"></line></svg> <span>Library</span> </a> <a href="/player" class="nav-item" data-page="player" id="nav-player"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg> <span>Now Playing</span> </a> <a href="/admin" class="nav-item" data-page="admin" id="nav-admin" style="display:none;"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg> <span>Admin</span> </a> </nav>  <script>(function(){const isProtected = true;
 const adminOnly = true;
 const API = "https://api.thevelatium.net";
 
-    const token = sessionStorage.getItem('literacy_token');
-    const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
-
-    if (isProtected && !token) {
-      location.href = '/';
-    }
-    if (adminOnly && (!user || user.role !== 'admin')) {
-      location.href = '/shelf';
-    }
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-    if (navigator.storage && navigator.storage.persist) {
-      navigator.storage.persist().catch(() => {});
-    }
-
     window.API = API;
-    window.authToken = token;
-    window.currentUser = user;
 
-    // Load active theme from API
+    // ── Auth ──────────────────────────────────────────────────────────────
+    function checkAuth() {
+      const token = sessionStorage.getItem('literacy_token');
+      const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+      window.authToken   = token;
+      window.currentUser = user;
+      if (isProtected && !token)                        { location.href = '/'; return; }
+      if (adminOnly && (!user || user.role !== 'admin')){ location.href = '/shelf'; return; }
+    }
+    checkAuth();
+
+    // ── Service worker ────────────────────────────────────────────────────
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
+
+    // ── Theme ─────────────────────────────────────────────────────────────
     fetch(`${API}/config/theme`)
       .then(r => r.json())
       .then(d => {
-        if (d.active && d.active !== 'noir') {
+        if (d.active && d.active !== 'noir')
           document.getElementById('theme-css').href = `/themes/${d.active}.css`;
-        }
-      })
-      .catch(() => {});
+      }).catch(() => {});
 
-    // Bottom nav — mark active page, show admin link if admin
-    if (isProtected) {
-      const page = location.pathname.replace(/\/$/, '').split('/').pop() || 'shelf';
-      const activeLink = document.querySelector(`.nav-item[data-page="${page}"]`);
-      if (activeLink) activeLink.classList.add('active');
+    // ── Global audio (set up once, persists across View Transitions) ──────
+    if (!window.__audioReady) {
+      window.__audioReady = true;
+      const audio = document.getElementById('global-audio');
+      window.__audio     = audio;
+      window.__audioSlug = null;
 
-      if (user && user.role === 'admin') {
-        const adminLink = document.getElementById('nav-admin');
-        if (adminLink) adminLink.style.display = 'flex';
+      function syncMiniPlayIcon() {
+        const play  = document.getElementById('mini-icon-play');
+        const pause = document.getElementById('mini-icon-pause');
+        if (!play || !pause) return;
+        play.style.display  = audio.paused ? 'block' : 'none';
+        pause.style.display = audio.paused ? 'none'  : 'block';
       }
 
-      // Grey out Now Playing if no book is in progress
-      const lastSlug = localStorage.getItem('literacy_last_slug');
-      const playerLink = document.getElementById('nav-player');
-      if (playerLink && !lastSlug) {
-        playerLink.style.opacity = '0.35';
-        playerLink.style.pointerEvents = 'none';
+      audio.addEventListener('play',  syncMiniPlayIcon);
+      audio.addEventListener('pause', syncMiniPlayIcon);
+      audio.addEventListener('ended', syncMiniPlayIcon);
+
+      window.__updateMiniPlayer = (slug, bookTitle, chapterLabel) => {
+        window.__audioSlug = slug;
+        const mp = document.getElementById('mini-player');
+        const t  = document.getElementById('mini-title');
+        const c  = document.getElementById('mini-chapter');
+        if (t) t.textContent = bookTitle;
+        if (c) c.textContent = chapterLabel;
+        if (mp) mp.style.display = 'flex';
+        document.body.classList.add('has-mini-player');
+        syncMiniPlayIcon();
+      };
+
+      window.__hideMiniPlayer = () => {
+        const mp = document.getElementById('mini-player');
+        if (mp) mp.style.display = 'none';
+        document.body.classList.remove('has-mini-player');
+        window.__audioSlug = null;
+      };
+    }
+
+    // ── Per-navigation wiring (runs on every page load / transition) ──────
+    document.addEventListener('astro:page-load', wireNav);
+    wireNav(); // also run immediately for first load
+
+    function wireNav() {
+      const token = sessionStorage.getItem('literacy_token');
+      const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+
+      // Active nav link
+      if (isProtected) {
+        const page = location.pathname.replace(/\/$/, '').split('/').pop() || 'shelf';
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        const activeLink = document.querySelector(`.nav-item[data-page="${page}"]`);
+        if (activeLink) activeLink.classList.add('active');
+
+        // Show admin link
+        if (user?.role === 'admin') {
+          const al = document.getElementById('nav-admin');
+          if (al) al.style.display = 'flex';
+        }
+
+        // Now Playing link — enable once a book has been played
+        const lastSlug = localStorage.getItem('literacy_last_slug');
+        const pl = document.getElementById('nav-player');
+        if (pl) {
+          pl.style.opacity        = lastSlug ? '1' : '0.35';
+          pl.style.pointerEvents  = lastSlug ? 'auto' : 'none';
+        }
+
+        // Mini-player tap → go to player
+        const miniInfo = document.getElementById('mini-info-tap');
+        if (miniInfo) {
+          miniInfo.onclick = () => {
+            if (window.__audioSlug) location.href = `/player?slug=${window.__audioSlug}`;
+          };
+        }
+
+        // Mini-player play/pause button
+        const miniBtn = document.getElementById('mini-btn');
+        if (miniBtn) {
+          miniBtn.onclick = () => {
+            const a = window.__audio || document.getElementById('global-audio');
+            if (!a) return;
+            if (a.paused) a.play().catch(() => {}); else a.pause();
+          };
+        }
+
+        // Hide mini-player on player page (controls are right there)
+        const onPlayer = location.pathname.includes('/player');
+        const mp = document.getElementById('mini-player');
+        if (mp) {
+          if (onPlayer) {
+            mp.style.display = 'none';
+            document.body.classList.remove('has-mini-player');
+          } else if (window.__audioSlug) {
+            mp.style.display = 'flex';
+            document.body.classList.add('has-mini-player');
+          }
+        }
       }
     }
   })();</script> </body> </html>

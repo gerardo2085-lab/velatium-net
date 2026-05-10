@@ -1,57 +1,132 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#000000"><link rel="manifest" href="/manifest.json"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/tokens.css"><link id="theme-css" rel="stylesheet" href="/themes/noir.css"><title>Literacy — Login</title><style>.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg-surface);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);z-index:100}.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 8px;color:var(--text-muted);text-decoration:none;font-size:10px;font-weight:600;letter-spacing:.04em;transition:color .2s}.nav-item svg{width:22px;height:22px}.nav-item.active{color:var(--text-primary)}.nav-item:hover{color:var(--text-secondary)}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}
-</style></head> <body>  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;"> <div class="logo" style="margin-bottom:32px;"> <div class="logo-mark"> <svg class="logo-arcs" viewBox="0 0 48 48" fill="none"> <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> </svg> <span class="logo-n">N</span> </div> <span class="logo-wordmark">LITERACY</span> </div> <p style="color:var(--text-secondary);font-size:14px;margin-bottom:32px;">Your private library.</p> <div class="card" style="width:100%;max-width:360px;"> <form id="login-form" style="display:flex;flex-direction:column;gap:12px;"> <div id="error-msg" style="display:none;color:#ff4444;font-size:13px;text-align:center;padding:8px 0;"></div> <input type="email" id="email" placeholder="Email" autocomplete="email" required> <input type="password" id="password" placeholder="Password" autocomplete="current-password" required> <button type="submit" id="submit-btn">Continue</button> </form> <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-secondary);">
-New to Literacy? <a href="/register">Request access</a> </p> </div> </div> <script type="module">document.getElementById("login-form").addEventListener("submit",async s=>{s.preventDefault();const e=document.getElementById("submit-btn"),n=document.getElementById("error-msg");e.textContent="Signing in…",e.disabled=!0,n.style.display="none";try{const t=await fetch(`${window.API}/auth/login`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:document.getElementById("email").value,password:document.getElementById("password").value})}),o=await t.json();if(!t.ok)throw new Error(o.error||"Login failed");sessionStorage.setItem("literacy_token",o.token),sessionStorage.setItem("literacy_user",JSON.stringify(o.user)),location.href="/shelf"}catch(t){n.textContent=t.message,n.style.display="block",e.textContent="Continue",e.disabled=!1}});</script>    <script>(function(){const isProtected = false;
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#000000"><link rel="manifest" href="/manifest.json"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/tokens.css"><link rel="stylesheet" href="/base.css"><link id="theme-css" rel="stylesheet" href="/themes/noir.css"><title>Literacy — Login</title><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.CAqDO0tx.js"></script><style>.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg-surface);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);z-index:100}.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 8px;color:var(--text-muted);text-decoration:none;font-size:10px;font-weight:600;letter-spacing:.04em;transition:color .2s}.nav-item svg{width:22px;height:22px}.nav-item.active{color:var(--text-primary)}.nav-item:hover{color:var(--text-secondary)}.mini-player{position:fixed;bottom:62px;left:0;right:0;display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--bg-card);border-top:1px solid var(--border);z-index:99}.mini-info{flex:1;min-width:0;cursor:pointer}.mini-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-chapter{font-size:11px;color:var(--text-secondary);margin-top:2px}.mini-btn{background:none;border:none;color:var(--text-primary);cursor:pointer;padding:6px;width:auto;display:flex;align-items:center;justify-content:center}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}body.has-mini-player{padding-bottom:calc(122px + env(safe-area-inset-bottom))}@keyframes astroFadeInOut{0%{opacity:1}to{opacity:0}}@keyframes astroFadeIn{0%{opacity:0;mix-blend-mode:plus-lighter}to{opacity:1;mix-blend-mode:plus-lighter}}@keyframes astroFadeOut{0%{opacity:1;mix-blend-mode:plus-lighter}to{opacity:0;mix-blend-mode:plus-lighter}}@keyframes astroSlideFromRight{0%{transform:translate(100%)}}@keyframes astroSlideFromLeft{0%{transform:translate(-100%)}}@keyframes astroSlideToRight{to{transform:translate(100%)}}@keyframes astroSlideToLeft{to{transform:translate(-100%)}}@media(prefers-reduced-motion){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}[data-astro-transition-scope]{animation:none!important}}
+</style></head> <body> <!-- Persistent audio engine — survives page transitions --> <audio id="global-audio" data-astro-transition-persist="astro-lennmlil-1"></audio>  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;"> <div class="logo" style="margin-bottom:32px;"> <div class="logo-mark"> <svg class="logo-arcs" viewBox="0 0 48 48" fill="none"> <path d="M24 36 Q12 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q8 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q4 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 36 Q36 24 24 12" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 40 Q40 24 24 8" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round"></path> <path d="M24 44 Q44 24 24 4" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"></path> </svg> <span class="logo-n">N</span> </div> <span class="logo-wordmark">LITERACY</span> </div> <p style="color:var(--text-secondary);font-size:14px;margin-bottom:32px;">Your private library.</p> <div class="card" style="width:100%;max-width:360px;"> <form id="login-form" style="display:flex;flex-direction:column;gap:12px;"> <div id="error-msg" style="display:none;color:#ff4444;font-size:13px;text-align:center;padding:8px 0;"></div> <input type="email" id="email" placeholder="Email" autocomplete="email" required> <input type="password" id="password" placeholder="Password" autocomplete="current-password" required> <button type="submit" id="submit-btn">Continue</button> </form> <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-secondary);">
+New to Literacy? <a href="/register">Request access</a> </p> </div> </div> <script type="module">document.getElementById("login-form").addEventListener("submit",async s=>{s.preventDefault();const e=document.getElementById("submit-btn"),n=document.getElementById("error-msg");e.textContent="Signing in…",e.disabled=!0,n.style.display="none";try{const t=await fetch(`${window.API}/auth/login`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:document.getElementById("email").value,password:document.getElementById("password").value})}),o=await t.json();if(!t.ok)throw new Error(o.error||"Login failed");sessionStorage.setItem("literacy_token",o.token),sessionStorage.setItem("literacy_user",JSON.stringify(o.user)),location.href="/shelf"}catch(t){n.textContent=t.message,n.style.display="block",e.textContent="Continue",e.disabled=!1}});</script>  <!-- Mini-player — shown on non-player pages when audio is active -->    <script>(function(){const isProtected = false;
 const adminOnly = false;
 const API = "https://api.thevelatium.net";
 
-    const token = sessionStorage.getItem('literacy_token');
-    const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
-
-    if (isProtected && !token) {
-      location.href = '/';
-    }
-    if (adminOnly && (!user || user.role !== 'admin')) {
-      location.href = '/shelf';
-    }
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-    if (navigator.storage && navigator.storage.persist) {
-      navigator.storage.persist().catch(() => {});
-    }
-
     window.API = API;
-    window.authToken = token;
-    window.currentUser = user;
 
-    // Load active theme from API
+    // ── Auth ──────────────────────────────────────────────────────────────
+    function checkAuth() {
+      const token = sessionStorage.getItem('literacy_token');
+      const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+      window.authToken   = token;
+      window.currentUser = user;
+      if (isProtected && !token)                        { location.href = '/'; return; }
+      if (adminOnly && (!user || user.role !== 'admin')){ location.href = '/shelf'; return; }
+    }
+    checkAuth();
+
+    // ── Service worker ────────────────────────────────────────────────────
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
+
+    // ── Theme ─────────────────────────────────────────────────────────────
     fetch(`${API}/config/theme`)
       .then(r => r.json())
       .then(d => {
-        if (d.active && d.active !== 'noir') {
+        if (d.active && d.active !== 'noir')
           document.getElementById('theme-css').href = `/themes/${d.active}.css`;
-        }
-      })
-      .catch(() => {});
+      }).catch(() => {});
 
-    // Bottom nav — mark active page, show admin link if admin
-    if (isProtected) {
-      const page = location.pathname.replace(/\/$/, '').split('/').pop() || 'shelf';
-      const activeLink = document.querySelector(`.nav-item[data-page="${page}"]`);
-      if (activeLink) activeLink.classList.add('active');
+    // ── Global audio (set up once, persists across View Transitions) ──────
+    if (!window.__audioReady) {
+      window.__audioReady = true;
+      const audio = document.getElementById('global-audio');
+      window.__audio     = audio;
+      window.__audioSlug = null;
 
-      if (user && user.role === 'admin') {
-        const adminLink = document.getElementById('nav-admin');
-        if (adminLink) adminLink.style.display = 'flex';
+      function syncMiniPlayIcon() {
+        const play  = document.getElementById('mini-icon-play');
+        const pause = document.getElementById('mini-icon-pause');
+        if (!play || !pause) return;
+        play.style.display  = audio.paused ? 'block' : 'none';
+        pause.style.display = audio.paused ? 'none'  : 'block';
       }
 
-      // Grey out Now Playing if no book is in progress
-      const lastSlug = localStorage.getItem('literacy_last_slug');
-      const playerLink = document.getElementById('nav-player');
-      if (playerLink && !lastSlug) {
-        playerLink.style.opacity = '0.35';
-        playerLink.style.pointerEvents = 'none';
+      audio.addEventListener('play',  syncMiniPlayIcon);
+      audio.addEventListener('pause', syncMiniPlayIcon);
+      audio.addEventListener('ended', syncMiniPlayIcon);
+
+      window.__updateMiniPlayer = (slug, bookTitle, chapterLabel) => {
+        window.__audioSlug = slug;
+        const mp = document.getElementById('mini-player');
+        const t  = document.getElementById('mini-title');
+        const c  = document.getElementById('mini-chapter');
+        if (t) t.textContent = bookTitle;
+        if (c) c.textContent = chapterLabel;
+        if (mp) mp.style.display = 'flex';
+        document.body.classList.add('has-mini-player');
+        syncMiniPlayIcon();
+      };
+
+      window.__hideMiniPlayer = () => {
+        const mp = document.getElementById('mini-player');
+        if (mp) mp.style.display = 'none';
+        document.body.classList.remove('has-mini-player');
+        window.__audioSlug = null;
+      };
+    }
+
+    // ── Per-navigation wiring (runs on every page load / transition) ──────
+    document.addEventListener('astro:page-load', wireNav);
+    wireNav(); // also run immediately for first load
+
+    function wireNav() {
+      const token = sessionStorage.getItem('literacy_token');
+      const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+
+      // Active nav link
+      if (isProtected) {
+        const page = location.pathname.replace(/\/$/, '').split('/').pop() || 'shelf';
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        const activeLink = document.querySelector(`.nav-item[data-page="${page}"]`);
+        if (activeLink) activeLink.classList.add('active');
+
+        // Show admin link
+        if (user?.role === 'admin') {
+          const al = document.getElementById('nav-admin');
+          if (al) al.style.display = 'flex';
+        }
+
+        // Now Playing link — enable once a book has been played
+        const lastSlug = localStorage.getItem('literacy_last_slug');
+        const pl = document.getElementById('nav-player');
+        if (pl) {
+          pl.style.opacity        = lastSlug ? '1' : '0.35';
+          pl.style.pointerEvents  = lastSlug ? 'auto' : 'none';
+        }
+
+        // Mini-player tap → go to player
+        const miniInfo = document.getElementById('mini-info-tap');
+        if (miniInfo) {
+          miniInfo.onclick = () => {
+            if (window.__audioSlug) location.href = `/player?slug=${window.__audioSlug}`;
+          };
+        }
+
+        // Mini-player play/pause button
+        const miniBtn = document.getElementById('mini-btn');
+        if (miniBtn) {
+          miniBtn.onclick = () => {
+            const a = window.__audio || document.getElementById('global-audio');
+            if (!a) return;
+            if (a.paused) a.play().catch(() => {}); else a.pause();
+          };
+        }
+
+        // Hide mini-player on player page (controls are right there)
+        const onPlayer = location.pathname.includes('/player');
+        const mp = document.getElementById('mini-player');
+        if (mp) {
+          if (onPlayer) {
+            mp.style.display = 'none';
+            document.body.classList.remove('has-mini-player');
+          } else if (window.__audioSlug) {
+            mp.style.display = 'flex';
+            document.body.classList.add('has-mini-player');
+          }
+        }
       }
     }
   })();</script> </body> </html>
