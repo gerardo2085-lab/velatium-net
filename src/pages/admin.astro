@@ -33,6 +33,14 @@ import Base from '../layouts/Base.astro';
     </div>
 
     <div id="panel-catalog" style="display:none;">
+      <div class="card" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size:13px;font-weight:600;">Library Scan</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Detect new folders in the server library and add them automatically.</div>
+        </div>
+        <button class="btn-sm approve" id="scan-btn" onclick="scanLibrary()" style="white-space:nowrap;">Scan Library</button>
+      </div>
+      <div id="scan-result" style="display:none;margin-bottom:12px;font-size:12px;padding:10px 14px;background:var(--bg-input);border-radius:8px;"></div>
       <div class="card">
         <div id="books-list"><p style="color:var(--text-muted);font-size:13px;">Loading…</p></div>
       </div>
@@ -120,6 +128,31 @@ import Base from '../layouts/Base.astro';
     window.toggleBook = async (slug) => {
       await apiCall(`/admin/books/${slug}/toggle`, 'POST');
       loadBooks();
+    };
+
+    window.scanLibrary = async () => {
+      const btn = document.getElementById('scan-btn');
+      const result = document.getElementById('scan-result');
+      btn.disabled = true;
+      btn.textContent = 'Scanning…';
+      result.style.display = 'none';
+      try {
+        const res = await apiCall('/admin/scan', 'POST');
+        const d   = await res.json();
+        const lines = [];
+        if (d.added?.length)   lines.push(`✅ Added (${d.added.length}): ${d.added.map(b => b.title).join(', ')}`);
+        if (d.skipped?.length) lines.push(`⏭ Already in library (${d.skipped.length}): ${d.skipped.map(b => b.title).join(', ')}`);
+        if (d.errors?.length)  lines.push(`⚠️ Errors: ${d.errors.map(e => e.folder + ' — ' + e.reason).join(', ')}`);
+        if (!lines.length)     lines.push('No new folders found in the library.');
+        result.innerHTML = lines.join('<br>');
+        result.style.display = 'block';
+        if (d.added?.length) loadBooks();
+      } catch(e) {
+        result.innerHTML = '❌ Scan failed: ' + e.message;
+        result.style.display = 'block';
+      }
+      btn.disabled = false;
+      btn.textContent = 'Scan Library';
     };
 
     async function loadThemes() {
