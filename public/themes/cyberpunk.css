@@ -1,0 +1,21 @@
+/* ============================================================
+   LITERACY THEME — Cyberpunk
+   Electric neon city — cyan & magenta on deep black-blue
+   ============================================================ */
+
+:root {
+  --bg:             #020d18;
+  --bg-surface:     #071422;
+  --bg-card:        #0a1c30;
+  --bg-input:       #061018;
+
+  --text-primary:   #e8f7ff;
+  --text-secondary: #4d8fa8;
+  --text-muted:     #1a3d52;
+
+  --accent:         #00d4ff;
+  --accent-dim:     #004d66;
+
+  --border:         #0e3352;
+  --border-focus:   #00d4ff;
+}
