@@ -1,0 +1,102 @@
+/* ============================================================
+   LITERACY THEME — Velarium Noir
+   Luxury cinematic OLED library
+   ============================================================ */
+
+:root {
+  --bg:             #090909;
+  --bg-surface:     #111111;
+  --bg-card:        #171615;
+  --bg-input:       #24211f;
+
+  --text-primary:   #f4efe7;
+  --text-secondary: #b8aa96;
+  --text-muted:     #73685c;
+
+  --accent:         #d4a85f;
+  --accent-dim:     #86663a;
+
+  --border:         #2d2925;
+  --border-focus:   #8f7447;
+
+  --radius-sm:  10px;
+  --radius-md:  18px;
+  --radius-lg:  28px;
+
+  --shadow: 0 8px 28px rgba(0,0,0,0.32);
+
+  /* extras — available for future use */
+  --accent-hover:     #e2bb79;
+  --accent-glow:      rgba(212,168,95,0.28);
+  --bg-elevated:      #1f1d1b;
+  --border-soft:      rgba(255,255,255,0.05);
+  --success:          #5fa87a;
+  --warning:          #c89a4d;
+  --danger:           #d06a62;
+  --glass-blur:       18px;
+}
+
+/* Ambient warm glow on OLED black */
+body {
+  background:
+    radial-gradient(circle at top left,  rgba(212,168,95,0.10), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(120,80,40,0.08), transparent 35%),
+    #090909;
+  color: var(--text-primary);
+}
+
+/* Book cards — gradient surface + hover glow */
+.book-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.00) 100%),
+    var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.book-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212,168,95,0.32);
+  box-shadow:
+    0 0 0 1px rgba(212,168,95,0.08),
+    0 10px 30px rgba(0,0,0,0.45),
+    0 0 40px rgba(212,168,95,0.06);
+}
+
+/* Primary action button (login / register submit) */
+button[type="submit"] {
+  background: linear-gradient(180deg, #e2bb79, #d4a85f);
+  color: #0a0a0a;
+  box-shadow: 0 6px 18px rgba(212,168,95,0.22);
+}
+button[type="submit"]:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 8px 24px rgba(212,168,95,0.30);
+  opacity: 1;
+}
+
+/* Inputs */
+input:focus, textarea:focus, select:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(212,168,95,0.12);
+}
+
+/* Mini-player — glass surface */
+.mini-player {
+  background: rgba(23,22,21,0.80);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Text selection */
+::selection {
+  background: rgba(212,168,95,0.28);
+  color: var(--text-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar       { width: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); }
+::-webkit-scrollbar-thumb { background: #3a3127; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #574636; }
