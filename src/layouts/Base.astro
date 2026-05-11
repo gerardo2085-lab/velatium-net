@@ -131,13 +131,24 @@ const API = 'https://api.thevelatium.net';
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
     if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
 
-    // ── Theme ─────────────────────────────────────────────────────────────
-    fetch(`${API}/config/theme`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.active && d.active !== 'noir')
-          document.getElementById('theme-css').href = `/themes/${d.active}.css`;
-      }).catch(() => {});
+    // ── Theme — applied on every navigation so ClientRouter head-morphing
+    //            never reverts a live theme switch
+    function applyTheme(id) {
+      const link = document.getElementById('theme-css');
+      if (link) link.href = `/themes/${id}.css`;
+      window.__activeTheme = id;
+    }
+    // Re-apply cached theme immediately (no flash on navigation)
+    if (window.__activeTheme) applyTheme(window.__activeTheme);
+    // Fetch from API once; afterwards the window cache keeps it in sync
+    if (!window.__themeFetched) {
+      window.__themeFetched = true;
+      fetch(`${API}/config/theme`)
+        .then(r => r.json())
+        .then(d => { if (d.active) applyTheme(d.active); })
+        .catch(() => {});
+    }
+    window.__applyTheme = applyTheme;
 
     // ── Global audio (set up once, persists across View Transitions) ──────
     if (!window.__audioReady) {
@@ -185,6 +196,9 @@ const API = 'https://api.thevelatium.net';
     function wireNav() {
       const token = sessionStorage.getItem('literacy_token');
       const user  = JSON.parse(sessionStorage.getItem('literacy_user') || 'null');
+
+      // Re-apply theme after ClientRouter may have reset the link href
+      if (window.__activeTheme) applyTheme(window.__activeTheme);
 
       // Active nav link
       if (isProtected) {

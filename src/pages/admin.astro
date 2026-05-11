@@ -249,7 +249,7 @@ import Base from '../layouts/Base.astro';
 
     window.setTheme = async (id) => {
       await apiCall('/config/theme', 'POST', { theme: id });
-      document.getElementById('theme-css').href = `/themes/${id}.css`;
+      if (window.__applyTheme) window.__applyTheme(id);
       loadThemes();
     };
 
